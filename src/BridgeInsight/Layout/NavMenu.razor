@@ -1,0 +1,31 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="container nav-container">
+        <a class="nav-brand" href="">
+            <span class="nav-brand-icon">&#9649;</span>
+            BridgeInsight
+        </a>
+
+        <button class="nav-toggle" @onclick="ToggleNavMenu" aria-label="Toggle navigation">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
+
+        <div class="nav-links @(collapseNavMenu ? "" : "nav-links--open")">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Home</NavLink>
+            <NavLink class="nav-link" href="about">About</NavLink>
+            <NavLink class="nav-link" href="projects">Projects</NavLink>
+            <NavLink class="nav-link" href="bridgeinsight">BridgeInsight</NavLink>
+            <NavLink class="nav-link" href="contact">Contact</NavLink>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

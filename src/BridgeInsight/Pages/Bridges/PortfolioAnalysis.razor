@@ -1,0 +1,263 @@
+@page "/bridgeinsight/portfolio"
+@inject BridgeDataService BridgeService
+@inject ClaudeAnalysisService AnalysisService
+@inject DatabaseService DbService
+
+<PageTitle>Portfolio Analysis — BridgeInsight</PageTitle>
+
+<div class="page-header">
+    <div class="container">
+        <h1>Portfolio Risk Narrative</h1>
+        <p class="page-subtitle">AI-generated risk briefing for non-technical decision-makers</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        @if (!DbService.IsInitialized)
+        {
+            <div class="loading-results">
+                <div class="spinner"></div>
+                <p>Loading bridge data...</p>
+            </div>
+        }
+        else
+        {
+            <!-- Selection Controls -->
+            <div class="card selection-card">
+                <h3>Select Bridges for Briefing</h3>
+                <div class="selection-presets">
+                    <button class="btn btn-sm @(selectionMode == "sd" ? "btn-accent" : "btn-outline")"
+                            @onclick='() => SelectPreset("sd")'>
+                        All Structurally Deficient
+                    </button>
+                    <button class="btn btn-sm @(selectionMode == "worst" ? "btn-accent" : "btn-outline")"
+                            @onclick='() => SelectPreset("worst")'>
+                        Top 20 Worst Condition
+                    </button>
+                    <button class="btn btn-sm @(selectionMode == "county" ? "btn-accent" : "btn-outline")"
+                            @onclick='() => SelectPreset("county")'>
+                        By County
+                    </button>
+                </div>
+
+                @if (selectionMode == "county")
+                {
+                    <div class="form-group" style="max-width: 300px; margin-top: 1rem;">
+                        <select class="form-control" @bind="selectedCountyForPortfolio" @bind:after="LoadCountyBridges">
+                            <option value="">Select County...</option>
+                            @foreach (var county in WaCountyCodes.Codes.OrderBy(c => c.Value))
+                            {
+                                <option value="@county.Key">@county.Value</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                @if (selectedBridges.Count > 0)
+                {
+                    <div class="selection-summary">
+                        <p><strong>@selectedBridges.Count</strong> bridges selected
+                            @if (selectedBridges.Count > 20)
+                            {
+                                <span class="selection-warning">(max 20 for briefing — first 20 will be used)</span>
+                            }
+                        </p>
+                        <button class="btn btn-accent" @onclick="GenerateBriefing" disabled="@isGenerating">
+                            @(isGenerating ? "Generating..." : "Generate Portfolio Briefing")
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <!-- Briefing Output -->
+            @if (isGenerating)
+            {
+                <div class="card" style="text-align: center; padding: 3rem;">
+                    <div class="spinner"></div>
+                    <p>Generating portfolio risk briefing... This may take 30-60 seconds.</p>
+                </div>
+            }
+            else if (briefing != null)
+            {
+                <div class="card briefing-card">
+                    <div class="briefing-header">
+                        <h2>Portfolio Risk Briefing</h2>
+                        @if (briefing.IsDemo)
+                        {
+                            <span class="badge badge-demo">Demo Mode</span>
+                        }
+                    </div>
+
+                    @if (briefing.Error != null)
+                    {
+                        <div class="analysis-error">
+                            <p>@briefing.Error</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="briefing-section">
+                            <h3>Executive Summary</h3>
+                            <div class="briefing-text">@briefing.ExecutiveSummary</div>
+                        </div>
+
+                        @if (briefing.BridgeEvidenceBlocks.Count > 0)
+                        {
+                            <div class="briefing-section">
+                                <h3>Bridge Evidence Blocks</h3>
+                                <div class="evidence-blocks">
+                                    @foreach (var block in briefing.BridgeEvidenceBlocks)
+                                    {
+                                        <div class="bridge-evidence-block">
+                                            <div class="block-header">
+                                                <strong>@block.Facility</strong>
+                                                <span class="mono">@block.StructureNumber</span>
+                                            </div>
+                                            <p class="block-assessment">@block.OneSentenceAssessment</p>
+                                            <div class="block-ratings">
+                                                @foreach (var rating in block.KeyRatings)
+                                                {
+                                                    <span class="rating-badge rating-badge--@GetConditionClass(rating.Value)">
+                                                        @rating.Key: @(rating.Value?.ToString() ?? "N/A")
+                                                    </span>
+                                                }
+                                            </div>
+                                            @if (block.RiskFactors.Count > 0)
+                                            {
+                                                <div class="block-risks">
+                                                    @foreach (var rf in block.RiskFactors)
+                                                    {
+                                                        <span class="badge badge-warning">@rf</span>
+                                                    }
+                                                </div>
+                                            }
+                                            <div class="block-action">@block.ActionCategory</div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(briefing.FundingNarrative))
+                        {
+                            <div class="briefing-section">
+                                <h3>Funding Prioritization Narrative</h3>
+                                <div class="briefing-text">@briefing.FundingNarrative</div>
+                            </div>
+                        }
+
+                        @if (briefing.DataQualityNotes.Count > 0)
+                        {
+                            <div class="briefing-section">
+                                <h3>Data Quality Notes</h3>
+                                <ul>
+                                    @foreach (var note in briefing.DataQualityNotes)
+                                    {
+                                        <li>@note</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="analysis-meta">
+                            Generated @briefing.GeneratedAt.ToString("MMM dd, yyyy HH:mm UTC")
+                            @if (briefing.IsDemo)
+                            {
+                                <span> &middot; Pre-cached demo response</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@code {
+    private List<Bridge> selectedBridges = new();
+    private PortfolioBriefingResult? briefing;
+    private bool isGenerating;
+    private string selectionMode = "";
+    private string selectedCountyForPortfolio = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!DbService.IsInitialized)
+            await DbService.InitializeAsync();
+    }
+
+    private async Task SelectPreset(string mode)
+    {
+        selectionMode = mode;
+        briefing = null;
+
+        var criteria = new BridgeSearchCriteria { PageSize = 20, Page = 1 };
+
+        switch (mode)
+        {
+            case "sd":
+                criteria.StructurallyDeficientOnly = true;
+                criteria.SortBy = "Condition";
+                break;
+            case "worst":
+                criteria.SortBy = "Condition";
+                break;
+            case "county":
+                selectedBridges.Clear();
+                return;
+        }
+
+        var result = await BridgeService.SearchBridgesAsync(criteria);
+        selectedBridges = result.Bridges;
+    }
+
+    private async Task LoadCountyBridges()
+    {
+        if (string.IsNullOrEmpty(selectedCountyForPortfolio)) return;
+
+        var criteria = new BridgeSearchCriteria
+        {
+            CountyCode = selectedCountyForPortfolio,
+            StructurallyDeficientOnly = true,
+            SortBy = "Condition",
+            PageSize = 20,
+            Page = 1
+        };
+
+        var result = await BridgeService.SearchBridgesAsync(criteria);
+        selectedBridges = result.Bridges;
+
+        if (selectedBridges.Count == 0)
+        {
+            criteria.StructurallyDeficientOnly = false;
+            result = await BridgeService.SearchBridgesAsync(criteria);
+            selectedBridges = result.Bridges;
+        }
+    }
+
+    private async Task GenerateBriefing()
+    {
+        if (selectedBridges.Count == 0) return;
+
+        isGenerating = true;
+        StateHasChanged();
+
+        var bridgesToAnalyze = selectedBridges.Take(20).ToList();
+        briefing = await AnalysisService.GeneratePortfolioBriefingAsync(bridgesToAnalyze);
+
+        isGenerating = false;
+    }
+
+    private string GetConditionClass(int? rating)
+    {
+        if (rating == null) return "na";
+        return rating switch
+        {
+            >= 7 => "good",
+            >= 5 => "fair",
+            4 => "poor",
+            _ => "critical"
+        };
+    }
+}

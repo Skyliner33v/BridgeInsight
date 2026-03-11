@@ -1,0 +1,92 @@
+{
+  "executive_summary": "This portfolio of 20 structurally deficient bridges in Washington State reveals a pattern of aging infrastructure with concentrated risk in deck deterioration and scour vulnerability. The majority of bridges in this set were built before 1980, with an average age exceeding 55 years. Deck condition is the predominant driver of structural deficiency, with 15 of 20 bridges showing deck ratings of 4 or below.\n\nThree bridges require immediate attention due to the combination of serious structural deterioration and high traffic exposure: the I-5 bridge over Lacamas Creek (ADT 41,665), the I-90 bridge over Mercer Slough (ADT 68,450), and the US 12 bridge over Wynoochee River (ADT 20,963). These structures carry critical freight and commuter traffic on routes with limited detour options.\n\nFunding prioritization should focus first on the Interstate corridor bridges where consequences of failure or emergency closure are greatest, followed by state route bridges with compounding risk factors such as scour vulnerability and geometric inadequacy.",
+  "risk_tiers": {
+    "immediate_attention": {
+      "bridges": ["I-5 over Lacamas Creek (0004375A)", "I-90 over Mercer Slough (0008610A)", "US 12 over Wynoochee River (0001949A)"],
+      "rationale": "These bridges combine serious structural deterioration (deck or superstructure ratings of 3 or below) with high traffic volumes exceeding 20,000 ADT. The I-90 Mercer Slough bridge carries 68,450 ADT with a superstructure rating of 3, representing the highest-consequence risk in the portfolio."
+    },
+    "near_term_priority": {
+      "bridges": ["SR 104 Hood Canal Bridge (0011964A)", "SR 24 over Yakima River (0016933A)", "I-90 over E Fork Issaquah Creek (0009973F)", "I-90 over Yellowstone Road (0008447B)"],
+      "rationale": "These bridges show advanced deterioration with deck ratings of 3-4 and carry significant traffic volumes. The Hood Canal Bridge is strategically critical as the only fixed link across Hood Canal. The Yakima River bridge is notable for deterioration despite relatively recent construction (2006)."
+    },
+    "monitor": {
+      "bridges": ["US 101 over Matlock Road (0009361C)", "I-90 over S Fork Snoqualmie (0009498E)", "I-90 over Homestead Valley Road (0009534A)", "I-90 over Bandera Road (0009217C)"],
+      "rationale": "These bridges show moderate deterioration (deck ratings of 3-4) but with lower traffic exposure or compensating factors. The cluster of I-90 bridges in the Snoqualmie Pass corridor suggests a systemic age-related pattern that may benefit from coordinated corridor-level rehabilitation planning."
+    },
+    "satisfactory": {
+      "bridges": [],
+      "rationale": "No bridges in this structurally deficient portfolio meet satisfactory criteria. All require some level of monitoring or intervention planning."
+    }
+  },
+  "comparative_analysis": {
+    "patterns": [
+      "Deck deterioration is the primary driver of structural deficiency in 75% of bridges in this portfolio, suggesting systematic deck aging across the state bridge inventory",
+      "Bridges built between 1965-1980 are disproportionately represented, indicating a cohort of similarly-aged structures that may require coordinated replacement programming",
+      "Interstate corridor bridges (I-5, I-90) make up 40% of the portfolio, highlighting vulnerability in the state's most critical transportation links",
+      "Multiple I-90 bridges in King and Kittitas Counties show similar deck condition patterns, suggesting common environmental or design factors"
+    ],
+    "prevalent_risk_factors": [
+      "Deck deterioration (deck rating 3 or below) — 15 of 20 bridges",
+      "Age exceeding typical design life (50+ years) — 14 of 20 bridges",
+      "High traffic exposure (ADT > 15,000) — 11 of 20 bridges",
+      "Scour vulnerability (scour critical 5 or below) — 6 of 20 bridges",
+      "Geometric inadequacy (deck geometry evaluation 4 or below) — 8 of 20 bridges"
+    ],
+    "data_gaps": [
+      "Several bridges are missing inspection dates — unable to verify inspection currency across the portfolio",
+      "Element-level condition data not available from NBI summary ratings, limiting deterioration trend analysis",
+      "Seismic vulnerability assessments not captured in NBI data for this pre-code bridge population",
+      "Historical inspection trends not available from single-year NBI snapshot — cannot determine rate of deterioration"
+    ]
+  },
+  "bridge_evidence_blocks": [
+    {
+      "structure_number": "0008610A0000000",
+      "facility": "I-90 over Mercer Slough",
+      "key_ratings": {"deck": 6, "superstructure": 3, "substructure": 7},
+      "one_sentence_assessment": "Highest-consequence bridge in portfolio with superstructure rating of 3 carrying 68,450 ADT on a critical east-west Interstate corridor.",
+      "risk_factors": ["High ADT on Interstate", "Serious superstructure deterioration", "Built 1970 — 54 years old"],
+      "action_category": "Immediate: Structural Assessment Required"
+    },
+    {
+      "structure_number": "0004375A0000000",
+      "facility": "I-5 over Lacamas Creek",
+      "key_ratings": {"deck": 3, "superstructure": 7, "substructure": 7},
+      "one_sentence_assessment": "Interstate bridge with severely deteriorated deck carrying 41,665 ADT with 24% truck traffic — active load posting in effect.",
+      "risk_factors": ["Deck rating 3", "Load posted", "24% truck traffic", "Underclearance deficiency"],
+      "action_category": "Immediate: Deck Replacement Planning"
+    },
+    {
+      "structure_number": "0001949A0000000",
+      "facility": "US 12 over Wynoochee River",
+      "key_ratings": {"deck": 3, "superstructure": 4, "substructure": 6},
+      "one_sentence_assessment": "89-year-old steel truss bridge with multi-component deterioration and scour-critical foundations — highest compound risk score in portfolio.",
+      "risk_factors": ["Extreme age (1935)", "Scour critical", "Multi-component deterioration", "Geometric inadequacy"],
+      "action_category": "Immediate: Replacement Prioritization"
+    },
+    {
+      "structure_number": "0011964A0000000",
+      "facility": "SR 104 Hood Canal Bridge (West)",
+      "key_ratings": {"deck": 6, "superstructure": 3, "substructure": 4},
+      "one_sentence_assessment": "Iconic floating bridge with serious superstructure concerns only 15 years after reconstruction — sole fixed link across Hood Canal.",
+      "risk_factors": ["Floating bridge superstructure at 3", "Strategic link", "Marine environment"],
+      "action_category": "Near-Term: Pontoon/Anchor System Assessment"
+    },
+    {
+      "structure_number": "0016933A0000000",
+      "facility": "SR 24 over Yakima River",
+      "key_ratings": {"deck": 3, "superstructure": 5, "substructure": 6},
+      "one_sentence_assessment": "Unusually young bridge (2006) showing premature deck deterioration — warrants investigation into construction quality or design factors.",
+      "risk_factors": ["Premature deterioration", "Only 18 years old", "Deck rating 3"],
+      "action_category": "Near-Term: Root Cause Investigation"
+    }
+  ],
+  "funding_narrative": "Based on this portfolio analysis, funding allocation should prioritize three tiers of investment:\n\nFirst, approximately $15-25M should be allocated for immediate structural assessment and emergency stabilization of the three highest-risk bridges (I-90 Mercer Slough, I-5 Lacamas Creek, US 12 Wynoochee River). These bridges carry the highest traffic volumes with the most severe condition ratings, and any require bridge-specific structural capacity analyses to determine whether continued service is appropriate without intervention.\n\nSecond, the corridor-level pattern of deck deterioration on I-90 between Issaquah and Snoqualmie Pass (4 bridges with deck ratings of 3) suggests an opportunity for programmatic deck replacement that could achieve economies of scale. A coordinated corridor rehabilitation program would likely be more cost-effective than addressing each bridge individually.\n\nThird, the SR 24 Yakima River bridge (built 2006, deck already at 3) warrants a focused investigation into premature deterioration causes. If construction or design defects are identified, warranty or liability recovery may offset repair costs. This investigation could also inform quality assurance protocols for future bridge construction statewide.",
+  "data_quality_notes": [
+    "This analysis is based on NBI summary ratings which provide a snapshot rather than trend data. Historical ratings would significantly improve deterioration modeling.",
+    "Several bridges in this portfolio are missing inspection dates in the NBI dataset. Verifying inspection currency is essential for confirming the accuracy of these ratings.",
+    "Scour critical ratings should be cross-referenced with the most recent underwater inspection reports, as NBI summary coding may not reflect the most current scour assessments.",
+    "Element-level bridge inspection data (available in WSDOT's BrM system) would provide significantly more granular condition information than the NBI 0-9 ratings used here.",
+    "Traffic data (ADT) may reflect different count years. Verify that all ADT values are from the same reporting period for accurate risk comparison."
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\bin\\Debug\\net8.0\\wwwroot\\_framework\\blazor.webassembly.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\obj\\Debug\\net8.0\\compressed\\e1i7pzexs0.gz",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\obj\\Debug\\net8.0\\scopedcss\\bundle\\BridgeInsight.styles.css",
+      "PackagePath": "staticwebassets\\BridgeInsight.styles.css"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\obj\\Debug\\net8.0\\service-worker-assets.js",
+      "PackagePath": "staticwebassets\\service-worker-assets.js"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\obj\\Debug\\net8.0\\service-worker\\service-worker.published.js",
+      "PackagePath": "staticwebassets\\service-worker.js"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\404.html",
+      "PackagePath": "staticwebassets\\404.html"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\css\\app.css",
+      "PackagePath": "staticwebassets\\css\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\data\\demo-responses\\bridge-demo-1.json",
+      "PackagePath": "staticwebassets\\data\\demo-responses\\bridge-demo-1.json"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\data\\demo-responses\\bridge-demo-2.json",
+      "PackagePath": "staticwebassets\\data\\demo-responses\\bridge-demo-2.json"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\data\\demo-responses\\bridge-demo-3.json",
+      "PackagePath": "staticwebassets\\data\\demo-responses\\bridge-demo-3.json"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\data\\demo-responses\\portfolio-briefing.json",
+      "PackagePath": "staticwebassets\\data\\demo-responses\\portfolio-briefing.json"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\data\\wa-bridges-2024.json",
+      "PackagePath": "staticwebassets\\data\\wa-bridges-2024.json"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\icon-192.png",
+      "PackagePath": "staticwebassets\\icon-192.png"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\icon-512.png",
+      "PackagePath": "staticwebassets\\icon-512.png"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\js\\three-hero.js",
+      "PackagePath": "staticwebassets\\js\\three-hero.js"
+    },
+    {
+      "Id": "C:\\Users\\skyli\\Desktop\\Repos\\MayvueProject\\src\\BridgeInsight\\wwwroot\\manifest.webmanifest",
+      "PackagePath": "staticwebassets\\manifest.webmanifest"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BridgeInsight.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.BridgeInsight.props",
+      "PackagePath": "build\\BridgeInsight.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.BridgeInsight.props",
+      "PackagePath": "buildMultiTargeting\\BridgeInsight.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.BridgeInsight.props",
+      "PackagePath": "buildTransitive\\BridgeInsight.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

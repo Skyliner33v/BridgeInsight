@@ -1,0 +1,82 @@
+{
+  "structure_number": "0004375A0000000",
+  "analysis": {
+    "summary": "This 1953 Interstate 5 bridge over Lacamas Creek and Drews Prairie Road in Lewis County presents a significant concern due to its severely deteriorated deck condition (rated 3 — Serious). The bridge carries over 41,600 vehicles daily with 24% truck traffic, making this a high-consequence corridor where deck failure would cause major regional disruption.\n\nDespite a 1976 reconstruction, the deck has declined to a rating that indicates \"serious deterioration of the deck with section loss, deterioration, spalling, or scour that has seriously affected primary structural components.\" The superstructure and substructure remain in Good condition (7), suggesting the deterioration is localized to the deck rather than systemic. The bridge is currently posted (Open/Posted/Closed = P) with posting value 1, indicating load restrictions are in effect.\n\nThe combination of high ADT, significant truck percentage, and poor deck condition on a critical Interstate corridor warrants prioritized attention. The bridge's structural evaluation of 4 (\"Meets minimum tolerable limits\") reinforces that this structure is operating at the boundary of acceptable service.",
+    "evidence_chain": [
+      {
+        "claim": "The deck is in serious condition requiring attention",
+        "data_fields": ["Item 58: Deck Condition = 3"],
+        "standard_reference": "Per FHWA Recording and Coding Guide, a rating of 3 (Serious Condition) indicates serious deterioration or section loss of the deck with loss of section in primary structural components. Local failures are possible.",
+        "reasoning": "A deck rating of 3 on a 0-9 scale places this bridge in the bottom third of condition ratings. For a bridge carrying Interstate traffic, this represents an elevated risk level that warrants near-term intervention planning."
+      },
+      {
+        "claim": "This is a high-consequence corridor based on traffic volume",
+        "data_fields": ["Item 29: ADT = 41,665", "Item 109: Truck Traffic = 24%"],
+        "standard_reference": "FHWA functional classification standards identify bridges with ADT exceeding 10,000 as high-volume. Truck percentages above 15% indicate significant freight corridor usage.",
+        "reasoning": "With nearly 42,000 vehicles per day and nearly one-quarter being trucks, any closure or weight restriction on this bridge would cause significant detour impacts on I-5, the primary north-south Interstate corridor in Washington State."
+      },
+      {
+        "claim": "The bridge is operating at minimum tolerable limits",
+        "data_fields": ["Item 67: Structural Evaluation = 4", "Item 70: Bridge Posting = 1"],
+        "standard_reference": "Per FHWA, a structural evaluation of 4 means the bridge 'meets minimum tolerable limits to be left in place as is.' Posting value 1 indicates the bridge has weight restrictions.",
+        "reasoning": "The combination of a structural evaluation of 4 and active posting confirms that this bridge has already reached the threshold where operational restrictions are necessary. Further deterioration could require closure."
+      },
+      {
+        "claim": "The 1976 reconstruction has not prevented deck deterioration",
+        "data_fields": ["Item 27: Year Built = 1953", "Item 106: Year Reconstructed = 1976"],
+        "standard_reference": "FHWA expects typical bridge deck service life of 40-50 years depending on materials and environmental exposure.",
+        "reasoning": "The reconstructed deck is now 48 years old (as of 2024), approaching or exceeding typical service life. The rating of 3 suggests the reconstruction-era deck is near the end of its effective life."
+      }
+    ],
+    "risk_factors": [
+      {
+        "factor": "Deck Deterioration on Interstate",
+        "severity": "high",
+        "detail": "Deck condition rating of 3 on a bridge carrying 41,665 ADT (24% trucks) on I-5 represents a high-consequence failure risk. Section loss in the deck directly affects load-carrying capacity."
+      },
+      {
+        "factor": "Load-Posted Interstate Bridge",
+        "severity": "high",
+        "detail": "Active load posting (Item 70 = 1) on an Interstate bridge is unusual and indicates the structure cannot safely carry full legal loads. This creates freight routing complications."
+      },
+      {
+        "factor": "Underclearance Deficiency",
+        "severity": "medium",
+        "detail": "Underclearance evaluation of 3 (basically intolerable) suggests vertical clearance issues for the roadway below, which could contribute to vehicle strikes and further structural damage."
+      },
+      {
+        "factor": "Scour Vulnerability",
+        "severity": "medium",
+        "detail": "Scour critical rating of 5 indicates the bridge foundations are assessed as stable for observed scour conditions but the bridge requires monitoring during and after flood events."
+      }
+    ],
+    "data_gaps": [
+      "Inspection date not recorded in dataset — unable to verify inspection currency",
+      "No detailed element-level condition data available from NBI summary ratings alone",
+      "Reconstruction scope (Item 106 = 1976) not detailed — unclear what elements were addressed",
+      "No fracture-critical designation data available in this dataset"
+    ],
+    "recommended_actions": [
+      {
+        "priority": 1,
+        "action": "Commission deck condition assessment and repair feasibility study",
+        "rationale": "With a deck rating of 3 on a high-ADT Interstate bridge, detailed element-level inspection is needed to determine whether rehabilitation or replacement is the appropriate intervention."
+      },
+      {
+        "priority": 2,
+        "action": "Review and validate current load posting restrictions",
+        "rationale": "Ensure posting values reflect current deck condition and that appropriate signage and enforcement are in place on I-5."
+      },
+      {
+        "priority": 3,
+        "action": "Develop contingency plan for potential bridge closure or lane restrictions",
+        "rationale": "Given the declining deck condition on a critical Interstate corridor, having a traffic management and detour plan ready would reduce response time if emergency restrictions become necessary."
+      },
+      {
+        "priority": 4,
+        "action": "Include in next capital improvement programming cycle for deck replacement",
+        "rationale": "The 48-year-old reconstructed deck is at end of life. Proactive replacement planning is more cost-effective than emergency repairs."
+      }
+    ]
+  }
+}

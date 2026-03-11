@@ -1,0 +1,302 @@
+@page "/bridgeinsight/explorer"
+@inject BridgeDataService BridgeService
+@inject DatabaseService DbService
+@inject NavigationManager Nav
+
+<PageTitle>Bridge Explorer — BridgeInsight</PageTitle>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-row">
+            <div>
+                <h1>Bridge Explorer</h1>
+                <p class="page-subtitle">Washington State National Bridge Inventory</p>
+            </div>
+            <div class="search-box">
+                <input type="text" class="form-control" placeholder="Search by name, feature, or structure #..."
+                       @bind="searchText" @bind:event="oninput" @onkeyup="OnSearchKeyUp" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="explorer-section">
+    <div class="container">
+        @if (!DbService.IsInitialized)
+        {
+            <div class="init-panel">
+                <div class="spinner"></div>
+                <p>Loading bridge data...</p>
+            </div>
+        }
+        else
+        {
+            <!-- Stats Bar -->
+            @if (searchResult != null)
+            {
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value">@searchResult.TotalCount.ToString("N0")</div>
+                        <div class="stat-label">Bridges</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">@searchResult.PercentStructurallyDeficient.ToString("F1")%</div>
+                        <div class="stat-label">Structurally Deficient</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">@searchResult.AverageAge.ToString("F0") yrs</div>
+                        <div class="stat-label">Average Age</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">@searchResult.AverageAdt.ToString("N0")</div>
+                        <div class="stat-label">Average ADT</div>
+                    </div>
+                </div>
+            }
+
+            <div class="explorer-layout">
+                <!-- Filters Panel -->
+                <aside class="filters-panel">
+                    <div class="filters-header">
+                        <h3>Filters</h3>
+                        <button class="btn btn-sm btn-outline" @onclick="ResetFilters">Reset</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">County</label>
+                        <select class="form-control" @bind="selectedCounty" @bind:after="ApplyFilters">
+                            <option value="">All Counties</option>
+                            @foreach (var county in WaCountyCodes.Codes.OrderBy(c => c.Value))
+                            {
+                                <option value="@county.Key">@county.Value</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Condition</label>
+                        <select class="form-control" @bind="selectedCondition" @bind:after="ApplyFilters">
+                            <option value="">All Conditions</option>
+                            <option value="good">Good (7-9)</option>
+                            <option value="fair">Fair (5-6)</option>
+                            <option value="poor">Poor (0-4)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Sort By</label>
+                        <select class="form-control" @bind="sortBy" @bind:after="ApplyFilters">
+                            <option value="FacilityCarried">Name</option>
+                            <option value="YearBuilt">Year Built</option>
+                            <option value="ADT">Traffic (ADT)</option>
+                            <option value="Condition">Condition (Worst)</option>
+                            <option value="County">County</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-toggle">
+                        <label>
+                            <input type="checkbox" @bind="sdOnly" @bind:after="ApplyFilters" />
+                            Structurally Deficient Only
+                        </label>
+                    </div>
+
+                    <div class="filter-toggle">
+                        <label>
+                            <input type="checkbox" @bind="scourOnly" @bind:after="ApplyFilters" />
+                            Scour Critical Only
+                        </label>
+                    </div>
+                </aside>
+
+                <!-- Results -->
+                <div class="results-panel">
+                    @if (isLoading)
+                    {
+                        <div class="loading-results">
+                            <div class="spinner"></div>
+                            <p>Searching...</p>
+                        </div>
+                    }
+                    else if (searchResult?.Bridges.Count == 0)
+                    {
+                        <div class="no-results">
+                            <p>No bridges match your filters.</p>
+                            <button class="btn btn-outline" @onclick="ResetFilters">Reset Filters</button>
+                        </div>
+                    }
+                    else if (searchResult != null)
+                    {
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Structure #</th>
+                                        <th>Facility Carried</th>
+                                        <th>Features Intersected</th>
+                                        <th>County</th>
+                                        <th>Year</th>
+                                        <th>ADT</th>
+                                        <th>Condition</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var bridge in searchResult.Bridges)
+                                    {
+                                        <tr class="clickable" @onclick="() => ViewBridge(bridge.StructureNumber)">
+                                            <td class="mono">@bridge.StructureNumber</td>
+                                            <td>@bridge.FacilityCarried</td>
+                                            <td>@bridge.FeaturesIntersected</td>
+                                            <td>@bridge.CountyName</td>
+                                            <td>@bridge.YearBuilt</td>
+                                            <td>@(bridge.AverageDailyTraffic?.ToString("N0") ?? "-")</td>
+                                            <td>
+                                                <span class="rating-badge rating-badge--@GetConditionClass(bridge.LowestConditionRating)">
+                                                    @(bridge.LowestConditionRating?.ToString() ?? "N/A") @FhwaRatings.GetRatingLabel(bridge.LowestConditionRating)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (bridge.IsStructurallyDeficient)
+                                                {
+                                                    <span class="badge badge-danger">SD</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        @if (totalPages > 1)
+                        {
+                            <div class="pagination">
+                                <button class="pagination-btn" disabled="@(currentPage <= 1)" @onclick="() => GoToPage(currentPage - 1)">&laquo;</button>
+                                @for (var p = Math.Max(1, currentPage - 2); p <= Math.Min(totalPages, currentPage + 2); p++)
+                                {
+                                    var page = p;
+                                    <button class="pagination-btn @(page == currentPage ? "active" : "")" @onclick="() => GoToPage(page)">@(page)</button>
+                                }
+                                <button class="pagination-btn" disabled="@(currentPage >= totalPages)" @onclick="() => GoToPage(currentPage + 1)">&raquo;</button>
+                                <span class="pagination-info">Page @currentPage of @totalPages</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private BridgeSearchResult? searchResult;
+    private bool isLoading = true;
+
+    // Filter state
+    private string searchText = "";
+    private string selectedCounty = "";
+    private string selectedCondition = "";
+    private string sortBy = "FacilityCarried";
+    private bool sdOnly;
+    private bool scourOnly;
+    private int currentPage = 1;
+    private const int PageSize = 50;
+    private int totalPages => searchResult == null ? 1 : (int)Math.Ceiling((double)searchResult.TotalCount / PageSize);
+
+    private System.Timers.Timer? debounceTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!DbService.IsInitialized)
+            await DbService.InitializeAsync();
+
+        await LoadBridges();
+    }
+
+    private async Task LoadBridges()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        int? minCondition = null, maxCondition = null;
+        if (selectedCondition == "good") { minCondition = 7; maxCondition = 9; }
+        else if (selectedCondition == "fair") { minCondition = 5; maxCondition = 6; }
+        else if (selectedCondition == "poor") { minCondition = 0; maxCondition = 4; }
+
+        var criteria = new BridgeSearchCriteria
+        {
+            SearchText = string.IsNullOrWhiteSpace(searchText) ? null : searchText,
+            CountyCode = string.IsNullOrEmpty(selectedCounty) ? null : selectedCounty,
+            MinCondition = minCondition,
+            MaxCondition = maxCondition,
+            SortBy = sortBy,
+            StructurallyDeficientOnly = sdOnly,
+            ScourCriticalOnly = scourOnly,
+            Page = currentPage,
+            PageSize = PageSize
+        };
+
+        searchResult = await BridgeService.SearchBridgesAsync(criteria);
+        isLoading = false;
+    }
+
+    private async Task ApplyFilters()
+    {
+        currentPage = 1;
+        await LoadBridges();
+    }
+
+    private void OnSearchKeyUp(KeyboardEventArgs e)
+    {
+        debounceTimer?.Stop();
+        debounceTimer?.Dispose();
+        debounceTimer = new System.Timers.Timer(300);
+        debounceTimer.Elapsed += async (s, _) =>
+        {
+            debounceTimer?.Stop();
+            await InvokeAsync(async () =>
+            {
+                currentPage = 1;
+                await LoadBridges();
+                StateHasChanged();
+            });
+        };
+        debounceTimer.Start();
+    }
+
+    private async Task ResetFilters()
+    {
+        searchText = "";
+        selectedCounty = "";
+        selectedCondition = "";
+        sortBy = "FacilityCarried";
+        sdOnly = false;
+        scourOnly = false;
+        currentPage = 1;
+        await LoadBridges();
+    }
+
+    private async Task GoToPage(int page)
+    {
+        currentPage = page;
+        await LoadBridges();
+    }
+
+    private void ViewBridge(string structureNumber)
+    {
+        Nav.NavigateTo($"bridgeinsight/bridge/{Uri.EscapeDataString(structureNumber)}");
+    }
+
+    private string GetConditionClass(int? rating)
+    {
+        if (rating == null) return "na";
+        return rating switch
+        {
+            >= 7 => "good",
+            >= 5 => "fair",
+            4 => "poor",
+            _ => "critical"
+        };
+    }
+}

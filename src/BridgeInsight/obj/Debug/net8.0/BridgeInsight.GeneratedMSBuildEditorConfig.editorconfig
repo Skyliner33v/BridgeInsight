@@ -1,0 +1,71 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = BridgeInsight
+build_property.RootNamespace = BridgeInsight
+build_property.ProjectDir = C:\Users\skyli\Desktop\Repos\MayvueProject\src\BridgeInsight\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\skyli\Desktop\Repos\MayvueProject\src\BridgeInsight
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-7rmrgv4ipk
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-auiom4wmui
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/About.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWJvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-6k91r8lw9t
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Bridges/BridgeDetailPage.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJpZGdlc1xCcmlkZ2VEZXRhaWxQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-kr3c6b423x
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Bridges/BridgeInsightIndex.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJpZGdlc1xCcmlkZ2VJbnNpZ2h0SW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-57j4ubu53c
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Bridges/Explorer.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJpZGdlc1xFeHBsb3Jlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-7tpxgdtili
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Bridges/PortfolioAnalysis.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQnJpZGdlc1xQb3J0Zm9saW9BbmFseXNpcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-xwv9e7jd4p
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Contact.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29udGFjdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-14g7jfn1nq
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-dru9gfw5oa
+
+[C:/Users/skyli/Desktop/Repos/MayvueProject/src/BridgeInsight/Pages/Projects.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-iegngxfrhk

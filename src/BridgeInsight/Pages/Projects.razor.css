@@ -1,0 +1,88 @@
+.page-header {
+    background: var(--color-primary);
+    color: white;
+    padding: 3rem 0;
+    margin-top: calc(-1 * var(--nav-height));
+    padding-top: calc(var(--nav-height) + 3rem);
+}
+
+.page-header h1 {
+    color: white;
+    margin-bottom: var(--space-xs);
+}
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+}
+
+.project-card {
+    background: var(--color-surface);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    transition: box-shadow var(--transition);
+}
+
+.project-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.project-card--featured {
+    border: 2px solid var(--color-accent);
+    background: linear-gradient(135deg, var(--color-surface) 0%, rgba(42, 157, 143, 0.03) 100%);
+}
+
+.project-badge {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.project-subtitle {
+    color: var(--color-accent);
+    font-weight: 500;
+    margin-bottom: var(--space-md);
+}
+
+.project-card p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+.project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin: var(--space-md) 0;
+}
+
+.project-actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.project-note {
+    font-size: 0.8125rem;
+    font-style: italic;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.skill-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+}

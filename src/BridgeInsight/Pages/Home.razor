@@ -1,0 +1,174 @@
+@page "/"
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<PageTitle>Jason Parent — Bridge Infrastructure Technology</PageTitle>
+
+<section class="hero">
+    <div id="three-hero-container" class="hero-canvas-container"></div>
+    <div class="container">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Bridge Engineer 4 &mdash; Database & Application Specialist</p>
+            <h1 class="hero-title">Jason Parent</h1>
+            <p class="hero-subtitle">
+                20 years modernizing bridge infrastructure technology at Washington State DOT.
+                Building the tools that keep engineers informed and bridges safe.
+            </p>
+            <div class="hero-actions">
+                <a href="bridgeinsight" class="btn btn-accent btn-lg">View BridgeInsight Demo</a>
+                <a href="projects" class="btn btn-outline btn-lg" style="border-color: white; color: white;">View Projects</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="highlights section">
+    <div class="container">
+        <div class="highlights-grid">
+            <div class="highlight-card">
+                <div class="highlight-value">20</div>
+                <div class="highlight-label">Years at WSDOT</div>
+                <p class="highlight-detail">Construction inspection through database & application specialist</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-value">Bridge Data</div>
+                <div class="highlight-label">Domain Expertise</div>
+                <p class="highlight-detail">AASHTOWare BrM, NBI/SNBI data systems, asset management, inspection workflows</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-value">Modern Stack</div>
+                <div class="highlight-label">Current Work</div>
+                <p class="highlight-detail">Migrating legacy Access applications to Blazor/.NET web architecture</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-value">Full Stack</div>
+                <div class="highlight-label">Technical Range</div>
+                <p class="highlight-detail">C#/.NET, Blazor, EF Core, SQL Server, Python, AI Integration</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tech-stack section">
+    <div class="container">
+        <h2 class="section-title">Built With</h2>
+        <p class="section-subtitle">Technologies powering this site and app — aligned with modern full-stack .NET AI development</p>
+
+        <div class="tech-grid">
+            <div class="tech-category">
+                <h3 class="tech-category-title">Frontend</h3>
+                <div class="tech-items">
+                    <div class="tech-item">
+                        <span class="tech-name">Blazor WebAssembly</span>
+                        <span class="tech-desc">Client-side SPA running entirely in the browser via .NET WASM</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">HTML / CSS / JS</span>
+                        <span class="tech-desc">Custom design system with CSS custom properties, no framework dependency</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">Three.js</span>
+                        <span class="tech-desc">WebGL 3D visuals via JS interop with lifecycle management</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">PWA</span>
+                        <span class="tech-desc">Offline-capable with service worker and Cache API persistence</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-category">
+                <h3 class="tech-category-title">Data Layer</h3>
+                <div class="tech-items">
+                    <div class="tech-item">
+                        <span class="tech-name">Entity Framework Core</span>
+                        <span class="tech-desc">Full ORM with LINQ queries running client-side in WASM</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">SQLite</span>
+                        <span class="tech-desc">Relational database in the browser — 8,400+ bridges with complex filtering</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">REST API Integration</span>
+                        <span class="tech-desc">Direct Anthropic API calls with structured request/response handling</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-category">
+                <h3 class="tech-category-title">AI / ML</h3>
+                <div class="tech-items">
+                    <div class="tech-item">
+                        <span class="tech-name">Claude API + RAG</span>
+                        <span class="tech-desc">AI analysis with FHWA reference data injected as system prompt context</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">Prompt Engineering</span>
+                        <span class="tech-desc">Structured prompts producing JSON with evidence-traced narratives</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">Explainable AI</span>
+                        <span class="tech-desc">Every AI claim traces to specific NBI data fields and FHWA standards</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-category">
+                <h3 class="tech-category-title">DevOps</h3>
+                <div class="tech-items">
+                    <div class="tech-item">
+                        <span class="tech-name">GitHub Actions</span>
+                        <span class="tech-desc">Automated CI/CD pipeline building WASM and deploying to GitHub Pages</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">Git</span>
+                        <span class="tech-desc">Version control with structured commit history</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-category">
+                <h3 class="tech-category-title">Standards</h3>
+                <div class="tech-items">
+                    <div class="tech-item">
+                        <span class="tech-name">C# / .NET 8</span>
+                        <span class="tech-desc">Strongly-typed full-stack development with modern language features</span>
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-name">FHWA NBI / SNBI</span>
+                        <span class="tech-desc">Federal bridge data standards used as domain reference throughout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("ThreeHero.init", "three-hero-container");
+            }
+            catch
+            {
+                // Three.js not loaded or WebGL not available — degrade gracefully
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("ThreeHero.dispose");
+        }
+        catch
+        {
+            // Already disposed or JS context not available
+        }
+    }
+}

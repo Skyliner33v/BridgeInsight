@@ -1,0 +1,352 @@
+@page "/bridgeinsight/bridge/{StructureNumber}"
+@inject BridgeDataService BridgeService
+@inject ClaudeAnalysisService AnalysisService
+@inject DatabaseService DbService
+@inject NavigationManager Nav
+
+<PageTitle>@(bridge?.FacilityCarried ?? "Bridge Detail") — BridgeInsight</PageTitle>
+
+<div class="page-header">
+    <div class="container">
+        <a href="bridgeinsight/explorer" class="back-link">&larr; Back to Explorer</a>
+        @if (bridge != null)
+        {
+            <h1>@bridge.FacilityCarried</h1>
+            <p class="page-subtitle">@bridge.FeaturesIntersected &middot; @bridge.CountyName County</p>
+        }
+    </div>
+</div>
+
+<section class="detail-section">
+    <div class="container">
+        @if (bridge == null)
+        {
+            <div class="loading-results">
+                <div class="spinner"></div>
+                <p>Loading bridge data...</p>
+            </div>
+        }
+        else
+        {
+            <div class="detail-grid">
+                <!-- Identity Card -->
+                <div class="card identity-card">
+                    <h3>Bridge Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Structure #</span>
+                            <span class="info-value mono">@bridge.StructureNumber</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Year Built</span>
+                            <span class="info-value">@(bridge.YearBuilt?.ToString() ?? "N/A") <span class="info-sub">(Age: @bridge.Age)</span></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Year Reconstructed</span>
+                            <span class="info-value">@(bridge.YearReconstructed?.ToString() ?? "N/A")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Structure Type</span>
+                            <span class="info-value">@StructureTypes.GetFullDescription(bridge.MainSpanMaterial, bridge.MainSpanDesign)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Length</span>
+                            <span class="info-value">@(bridge.StructureLength?.ToString("F1") ?? "N/A") m</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Width</span>
+                            <span class="info-value">@(bridge.BridgeRoadwayWidth?.ToString("F1") ?? "N/A") m</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">ADT</span>
+                            <span class="info-value">@(bridge.AverageDailyTraffic?.ToString("N0") ?? "N/A")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Truck Traffic</span>
+                            <span class="info-value">@(bridge.TruckTrafficPercent?.ToString() ?? "N/A")%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Owner</span>
+                            <span class="info-value">@OwnerCodes.GetOwner(bridge.Owner)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Maintenance</span>
+                            <span class="info-value">@OwnerCodes.GetMaintenanceResponsibility(bridge.MaintenanceResponsibility)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Last Inspected</span>
+                            <span class="info-value">@(bridge.InspectionDate?.ToString("MMM yyyy") ?? "N/A")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Inspection Frequency</span>
+                            <span class="info-value">@(bridge.InspectionFrequency?.ToString() ?? "N/A") months</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Location</span>
+                            <span class="info-value">@bridge.Latitude.ToString("F4"), @bridge.Longitude.ToString("F4")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Scour Critical</span>
+                            <span class="info-value">@(bridge.ScourCritical ?? "N/A")</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Condition Dashboard -->
+                <div class="card condition-card">
+                    <h3>Condition Ratings</h3>
+                    @if (bridge.IsStructurallyDeficient)
+                    {
+                        <div class="sd-alert">
+                            <span class="badge badge-danger">Structurally Deficient</span>
+                        </div>
+                    }
+
+                    <div class="condition-list">
+                        @ConditionRow("Deck", "58", bridge.DeckCondition)
+                        @ConditionRow("Superstructure", "59", bridge.SuperstructureCondition)
+                        @ConditionRow("Substructure", "60", bridge.SubstructureCondition)
+                        @ConditionRow("Culvert", "62", bridge.CulvertCondition)
+                        @ConditionRow("Channel", "61", bridge.ChannelCondition)
+                        @ConditionRow("Waterway Adequacy", "71", bridge.WaterwayAdequacy)
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis Section -->
+            <div class="card analysis-card">
+                <div class="analysis-header">
+                    <h3>AI Analysis</h3>
+                    @if (analysis != null && analysis.IsDemo)
+                    {
+                        <span class="badge badge-demo">Demo Mode</span>
+                    }
+                </div>
+
+                @if (analysis == null && !isAnalyzing)
+                {
+                    <div class="analysis-prompt">
+                        <p>Generate an AI-powered condition analysis with full evidence chain traceability.</p>
+                        <div class="analysis-actions">
+                            <button class="btn btn-accent" @onclick="RunAnalysis">Generate AI Analysis</button>
+                            @if (!hasApiKey)
+                            {
+                                <button class="btn btn-outline" @onclick="() => showApiKeyInput = !showApiKeyInput">Enter API Key</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-outline" @onclick="ClearApiKey">Clear API Key</button>
+                            }
+                        </div>
+                        @if (showApiKeyInput)
+                        {
+                            <div class="api-key-input">
+                                <input type="password" class="form-control" placeholder="sk-ant-..." @bind="apiKeyInput" />
+                                <button class="btn btn-sm btn-primary" @onclick="SaveApiKey">Save</button>
+                                <p class="api-key-note">Your API key is stored only in your browser session and is sent only to Anthropic's API.</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else if (isAnalyzing)
+                {
+                    <div class="analyzing">
+                        <div class="spinner"></div>
+                        <p>Analyzing bridge data and consulting FHWA standards...</p>
+                    </div>
+                }
+                else if (analysis?.Error != null)
+                {
+                    <div class="analysis-error">
+                        <p>@analysis.Error</p>
+                        <button class="btn btn-outline" @onclick="RunAnalysis">Retry</button>
+                    </div>
+                }
+                else if (analysis != null)
+                {
+                    <!-- Summary -->
+                    <div class="analysis-section">
+                        <h4>Condition Summary</h4>
+                        <div class="analysis-text">@analysis.Summary</div>
+                    </div>
+
+                    <!-- Evidence Chain -->
+                    @if (analysis.EvidenceChain.Count > 0)
+                    {
+                        <div class="analysis-section">
+                            <div class="collapsible-header" @onclick="() => showEvidence = !showEvidence">
+                                <h4>Show Your Work — Evidence Chain (@analysis.EvidenceChain.Count items)</h4>
+                                <span class="collapsible-chevron @(showEvidence ? "expanded" : "")">&#9660;</span>
+                            </div>
+                            <div class="collapsible-content @(showEvidence ? "expanded" : "")">
+                                <div class="evidence-list">
+                                    @foreach (var item in analysis.EvidenceChain)
+                                    {
+                                        <div class="evidence-item">
+                                            <div class="evidence-claim">@item.Claim</div>
+                                            <div class="evidence-fields">
+                                                @foreach (var field in item.DataFields)
+                                                {
+                                                    <code>@field</code>
+                                                }
+                                            </div>
+                                            <div class="evidence-ref">@item.StandardReference</div>
+                                            <div class="evidence-reasoning">@item.Reasoning</div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Risk Factors -->
+                    @if (analysis.RiskFactors.Count > 0)
+                    {
+                        <div class="analysis-section">
+                            <h4>Risk Factors</h4>
+                            <div class="risk-list">
+                                @foreach (var risk in analysis.RiskFactors)
+                                {
+                                    var severityClass = risk.Severity switch
+                                    {
+                                        "high" => "badge-danger",
+                                        "medium" => "badge-warning",
+                                        _ => "badge-info"
+                                    };
+                                    <div class="risk-item">
+                                        <span class="badge @severityClass">@risk.Severity</span>
+                                        <strong>@risk.Factor</strong>
+                                        <p>@risk.Detail</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Data Gaps -->
+                    @if (analysis.DataGaps.Count > 0)
+                    {
+                        <div class="analysis-section">
+                            <h4>Data Gaps & Caveats</h4>
+                            <ul class="data-gaps-list">
+                                @foreach (var gap in analysis.DataGaps)
+                                {
+                                    <li>@gap</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <!-- Recommended Actions -->
+                    @if (analysis.RecommendedActions.Count > 0)
+                    {
+                        <div class="analysis-section">
+                            <h4>Recommended Actions</h4>
+                            <div class="actions-list">
+                                @foreach (var action in analysis.RecommendedActions.OrderBy(a => a.Priority))
+                                {
+                                    <div class="action-item">
+                                        <span class="action-priority">@action.Priority</span>
+                                        <div>
+                                            <strong>@action.Action</strong>
+                                            <p>@action.Rationale</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="analysis-meta">
+                        Generated @analysis.GeneratedAt.ToString("MMM dd, yyyy HH:mm UTC")
+                        @if (analysis.IsDemo)
+                        {
+                            <span> &middot; Pre-cached demo response</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    [Parameter] public string StructureNumber { get; set; } = "";
+
+    private Bridge? bridge;
+    private BridgeAnalysis? analysis;
+    private bool isAnalyzing;
+    private bool hasApiKey;
+    private bool showApiKeyInput;
+    private bool showEvidence;
+    private string apiKeyInput = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!DbService.IsInitialized)
+            await DbService.InitializeAsync();
+
+        bridge = await BridgeService.GetBridgeAsync(Uri.UnescapeDataString(StructureNumber));
+        hasApiKey = await AnalysisService.HasApiKeyAsync();
+    }
+
+    private async Task RunAnalysis()
+    {
+        if (bridge == null) return;
+
+        isAnalyzing = true;
+        StateHasChanged();
+
+        analysis = await AnalysisService.AnalyzeBridgeAsync(bridge);
+        isAnalyzing = false;
+        showEvidence = false;
+    }
+
+    private async Task SaveApiKey()
+    {
+        if (!string.IsNullOrWhiteSpace(apiKeyInput))
+        {
+            await AnalysisService.SetApiKeyAsync(apiKeyInput);
+            hasApiKey = true;
+            showApiKeyInput = false;
+            apiKeyInput = "";
+        }
+    }
+
+    private async Task ClearApiKey()
+    {
+        await AnalysisService.ClearApiKeyAsync();
+        hasApiKey = false;
+    }
+}
+
+@* Inline ConditionRow component *@
+@code {
+    private RenderFragment ConditionRow(string Label, string Item, int? Rating) => __builder =>
+    {
+        <div class="condition-row">
+            <span class="condition-label">@Label <span class="condition-item">(Item @Item)</span></span>
+            <div class="condition-bar-container">
+                @if (Rating.HasValue)
+                {
+                    <div class="condition-bar condition-bar--@GetConditionClass(Rating)" style="width: @(Rating.Value * 100 / 9)%"></div>
+                }
+            </div>
+            <span class="rating-badge rating-badge--@GetConditionClass(Rating)">
+                @(Rating?.ToString() ?? "N/A") &mdash; @FhwaRatings.GetRatingLabel(Rating)
+            </span>
+        </div>
+    };
+
+    private string GetConditionClass(int? rating)
+    {
+        if (rating == null) return "na";
+        return rating switch
+        {
+            >= 7 => "good",
+            >= 5 => "fair",
+            4 => "poor",
+            _ => "critical"
+        };
+    }
+}

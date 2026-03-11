@@ -1,0 +1,83 @@
+{
+  "structure_number": "0011964A0000000",
+  "analysis": {
+    "summary": "The SR 104 Hood Canal Bridge (West Half) is one of Washington's most iconic and critical structures — a 1,143-foot floating bridge spanning Hood Canal in Jefferson County. Built in 1982 and reconstructed in 2009, this bridge currently shows concerning condition ratings in its superstructure (rated 3 — Serious) and substructure (rated 4 — Poor), despite carrying 17,634 vehicles per day.\n\nThe superstructure rating of 3 is particularly notable for a floating bridge, where the superstructure (pontoons and roadway structure) is the primary load-carrying system. A rating of 3 indicates serious deterioration that has affected primary structural components. The substructure rating of 4 (Poor) further suggests systemic structural concerns rather than isolated maintenance issues. Together, these ratings classify this bridge as Structurally Deficient.\n\nOn a positive note, the deck condition (6 — Satisfactory) is in reasonable shape, and the channel/waterway ratings (8) indicate favorable hydraulic conditions. The structural evaluation of 3 (\"Basically intolerable requiring high priority of corrective action\") signals that this bridge has been flagged for near-term intervention by the inspection team.",
+    "evidence_chain": [
+      {
+        "claim": "The superstructure shows serious deterioration affecting primary structural components",
+        "data_fields": ["Item 59: Superstructure Condition = 3"],
+        "standard_reference": "Per FHWA Recording and Coding Guide, a rating of 3 (Serious Condition) indicates that the loss of section, deterioration, spalling, or scour have seriously affected primary structural components. Local failures are possible. Fatigue cracks in steel or shear cracks in concrete may be present.",
+        "reasoning": "For a floating bridge, the superstructure encompasses the pontoon and deck system that is the bridge's primary structural element. A rating of 3 in this component is more consequential than for a conventional bridge because there is no separate substructure support system to provide redundancy."
+      },
+      {
+        "claim": "The substructure is in poor condition with advanced deterioration",
+        "data_fields": ["Item 60: Substructure Condition = 4"],
+        "standard_reference": "Per FHWA, a rating of 4 (Poor Condition) indicates advanced section loss, deterioration, spalling, or scour.",
+        "reasoning": "For a floating bridge, the 'substructure' typically includes the anchoring system and transition structures. A rating of 4 indicates the anchoring and support systems that keep the bridge in position are deteriorating, which could affect structural stability during storm events."
+      },
+      {
+        "claim": "The bridge has been flagged for high-priority corrective action",
+        "data_fields": ["Item 67: Structural Evaluation = 3"],
+        "standard_reference": "Per FHWA, a structural evaluation of 3 means 'basically intolerable requiring high priority of corrective action.'",
+        "reasoning": "This is one of the lowest structural evaluations possible for a bridge that remains open to traffic. It indicates the inspection team has determined that corrective action is urgently needed."
+      },
+      {
+        "claim": "The 2009 reconstruction has not fully addressed structural concerns",
+        "data_fields": ["Item 27: Year Built = 1982", "Item 106: Year Reconstructed = 2009"],
+        "standard_reference": "FHWA rehabilitation standards expect reconstructed bridges to have improved condition ratings for at least 15-20 years post-reconstruction.",
+        "reasoning": "Only 15 years after reconstruction, having superstructure and substructure ratings of 3 and 4 respectively suggests either the reconstruction scope was limited, or the marine environment has accelerated deterioration beyond expected rates."
+      }
+    ],
+    "risk_factors": [
+      {
+        "factor": "Critical Superstructure Deterioration on Floating Bridge",
+        "severity": "high",
+        "detail": "Superstructure rating of 3 on a floating bridge is especially concerning because the superstructure IS the primary structure. Unlike conventional bridges, there is limited structural redundancy."
+      },
+      {
+        "factor": "Strategic Transportation Link",
+        "severity": "high",
+        "detail": "The Hood Canal Bridge is the only fixed link across Hood Canal, connecting the Kitsap and Olympic Peninsulas. Closure would require 100+ mile detours via Olympia, severely impacting Navy Base Kitsap operations and regional connectivity."
+      },
+      {
+        "factor": "Marine Environment Exposure",
+        "severity": "medium",
+        "detail": "Saltwater exposure in Hood Canal accelerates corrosion and deterioration of concrete and steel structural elements. This environment contributes to faster-than-typical condition decline."
+      },
+      {
+        "factor": "Narrow Roadway Width",
+        "severity": "medium",
+        "detail": "Bridge roadway width of 12.2 meters (40 ft) for a bridge carrying 17,634 ADT with 7% trucks is relatively narrow, with deck geometry evaluation of 5 confirming somewhat better than minimum adequacy."
+      }
+    ],
+    "data_gaps": [
+      "Inspection date not recorded in dataset — unable to confirm inspection currency for this critical structure",
+      "Floating bridge pontoon-specific condition data is not captured in standard NBI ratings",
+      "No data on draw span operational status or mechanical condition",
+      "Wind and storm event loading history not available from NBI data",
+      "No element-level data on anchoring cable condition"
+    ],
+    "recommended_actions": [
+      {
+        "priority": 1,
+        "action": "Verify inspection is current and review element-level findings",
+        "rationale": "With a structural evaluation of 3, this bridge should be on an accelerated inspection schedule. Confirm that in-depth and underwater inspections are up to date."
+      },
+      {
+        "priority": 2,
+        "action": "Commission structural capacity assessment focused on pontoon and anchoring systems",
+        "rationale": "The combination of superstructure (3) and substructure (4) ratings on a floating bridge warrants a detailed engineering assessment of the pontoon flotation and anchoring systems."
+      },
+      {
+        "priority": 3,
+        "action": "Develop emergency closure and detour plan",
+        "rationale": "Given the critical role of this bridge and its deteriorating condition, an up-to-date emergency response plan should be maintained for potential unplanned closure scenarios."
+      },
+      {
+        "priority": 4,
+        "action": "Evaluate long-term replacement or major rehabilitation options",
+        "rationale": "With significant structural concerns only 15 years after reconstruction, a lifecycle cost analysis comparing rehabilitation vs. replacement should inform future capital programming."
+      }
+    ]
+  }
+}

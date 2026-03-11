@@ -1,0 +1,84 @@
+@page "/bridgeinsight"
+@inject DatabaseService DbService
+
+<PageTitle>BridgeInsight — Bridge Data Intelligence</PageTitle>
+
+<div class="page-header">
+    <div class="container">
+        <h1>BridgeInsight</h1>
+        <p class="page-subtitle">Explainable AI for Bridge Data Intelligence</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        @if (!DbService.IsInitialized)
+        {
+            <div class="init-panel">
+                <div class="spinner"></div>
+                <h3>Initializing BridgeInsight</h3>
+                <p>Loading Washington State bridge data...</p>
+            </div>
+        }
+        else
+        {
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value">@DbService.BridgeCount.ToString("N0")</div>
+                    <div class="stat-label">Washington State Bridges</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">2024</div>
+                    <div class="stat-label">NBI Data Year</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">FHWA</div>
+                    <div class="stat-label">Data Source</div>
+                </div>
+            </div>
+
+            <div class="app-nav-cards">
+                <a href="bridgeinsight/explorer" class="app-nav-card">
+                    <h3>Bridge Explorer</h3>
+                    <p>Search, filter, and browse all @DbService.BridgeCount.ToString("N0") bridges with sortable columns, condition filters, and detailed data views.</p>
+                    <span class="app-nav-link">Open Explorer &rarr;</span>
+                </a>
+                <a href="bridgeinsight/portfolio" class="app-nav-card">
+                    <h3>Portfolio Analysis</h3>
+                    <p>Generate AI-powered risk briefings across multiple bridges with tier classification, pattern analysis, and funding narratives.</p>
+                    <span class="app-nav-link">Open Analysis &rarr;</span>
+                </a>
+            </div>
+
+            <div class="demo-notice">
+                <h4>Why BridgeInsight?</h4>
+                <p>
+                    Built by a daily AASHTOWare BrM user and 20-year WSDOT bridge data specialist,
+                    BridgeInsight explores how explainable AI can augment bridge management workflows —
+                    turning raw NBI data into trustworthy, evidence-traced narratives that engineers
+                    can verify against the source data.
+                </p>
+            </div>
+
+            <div class="demo-notice">
+                <h4>Demo Mode</h4>
+                <p>
+                    BridgeInsight includes pre-generated AI analyses for select bridges.
+                    For live analysis of any bridge, enter your Claude API key in the bridge detail view.
+                    Your key is stored only in your browser and sent only to Anthropic's API.
+                </p>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (!DbService.IsInitialized)
+        {
+            await DbService.InitializeAsync();
+            StateHasChanged();
+        }
+    }
+}

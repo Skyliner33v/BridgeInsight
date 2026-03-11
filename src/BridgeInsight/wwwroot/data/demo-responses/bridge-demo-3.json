@@ -1,0 +1,88 @@
+{
+  "structure_number": "0001949A0000000",
+  "analysis": {
+    "summary": "This 1935 US 12 bridge over the Wynoochee River in Grays Harbor County is one of Washington's oldest active bridges at 89 years old. The bridge exhibits serious deck deterioration (rated 3) and poor superstructure condition (rated 4), classifying it as Structurally Deficient. It carries 20,963 vehicles daily — substantial traffic for a structure of this age and condition.\n\nThe combination of a deck rating of 3 and superstructure rating of 4 indicates multi-component deterioration that goes beyond routine maintenance needs. The deck shows serious section loss or deterioration affecting structural integrity, while the superstructure exhibits advanced deterioration. Notably, the substructure remains in Satisfactory condition (6), suggesting the foundation and supports are performing better than the above-water elements.\n\nOf particular concern is the scour critical rating of 3, indicating the bridge is \"scour critical — bridge foundations determined to be unstable for calculated scour conditions.\" This is a significant vulnerability for a river crossing that is already structurally compromised. The structural evaluation of 4 and deck geometry evaluation of 2 further confirm this bridge is operating at or below minimum acceptable standards.",
+    "evidence_chain": [
+      {
+        "claim": "The deck shows serious structural deterioration",
+        "data_fields": ["Item 58: Deck Condition = 3"],
+        "standard_reference": "Per FHWA Recording and Coding Guide, a rating of 3 (Serious Condition) indicates that deterioration has seriously affected primary structural components of the deck. Local failures are possible.",
+        "reasoning": "At 89 years old, the deck has been subject to decades of traffic loading, freeze-thaw cycles, and chemical exposure. A rating of 3 indicates the deck is approaching the point where load restrictions or emergency repairs may become necessary."
+      },
+      {
+        "claim": "The superstructure exhibits advanced deterioration",
+        "data_fields": ["Item 59: Superstructure Condition = 4", "Item 43A: Material = 3 (Steel)"],
+        "standard_reference": "Per FHWA, a rating of 4 (Poor Condition) indicates advanced section loss, deterioration, spalling, or scour. For steel superstructures, this typically manifests as corrosion-driven section loss in primary members.",
+        "reasoning": "Steel truss superstructures from 1935 are susceptible to long-term corrosion, particularly in the humid Pacific Northwest climate near the coast. A rating of 4 indicates section loss has advanced beyond surface corrosion into structural members."
+      },
+      {
+        "claim": "Bridge foundations are unstable for calculated scour conditions",
+        "data_fields": ["Item 113: Scour Critical = 3"],
+        "standard_reference": "Per FHWA, a scour critical rating of 3 means 'bridge is scour critical; bridge foundations determined to be unstable for calculated scour conditions — scour countermeasures may have been installed to address the instability.'",
+        "reasoning": "A scour rating of 3 on an 89-year-old bridge over the Wynoochee River creates a compounding risk: foundation instability from scour combined with superstructure deterioration means the bridge is vulnerable to multiple failure modes simultaneously."
+      },
+      {
+        "claim": "The bridge deck geometry is basically intolerable",
+        "data_fields": ["Item 68: Deck Geometry Evaluation = 2", "Item 51: Bridge Roadway Width = 13.4 m"],
+        "standard_reference": "Per FHWA, a deck geometry evaluation of 2 means 'basically intolerable requiring high priority of replacement.'",
+        "reasoning": "The 13.4-meter (44 ft) roadway width is insufficient for the 20,963 ADT this bridge carries. Modern standards would require significantly wider geometry for this traffic volume, and the evaluation of 2 confirms this is a priority geometric deficiency."
+      }
+    ],
+    "risk_factors": [
+      {
+        "factor": "Multi-Component Structural Deterioration",
+        "severity": "high",
+        "detail": "Both deck (3) and superstructure (4) are in poor to serious condition, indicating system-wide deterioration rather than isolated deficiency. This increases the probability of cascading failure."
+      },
+      {
+        "factor": "Scour-Critical Foundation",
+        "severity": "high",
+        "detail": "Scour critical rating of 3 indicates unstable foundations during flood events. Combined with structural deterioration, this creates elevated risk during high-water events on the Wynoochee River."
+      },
+      {
+        "factor": "Extreme Age",
+        "severity": "high",
+        "detail": "At 89 years old (built 1935), this bridge has exceeded typical design life by 40+ years. Material fatigue, corrosion, and cumulative damage significantly increase failure risk."
+      },
+      {
+        "factor": "High Traffic Volume for Condition",
+        "severity": "medium",
+        "detail": "Carrying nearly 21,000 vehicles daily on a bridge with a structural evaluation of 4 (minimum tolerable) means a large population is exposed to the consequences of any structural failure."
+      },
+      {
+        "factor": "Inadequate Roadway Geometry",
+        "severity": "medium",
+        "detail": "Deck geometry evaluation of 2 (basically intolerable) indicates the bridge cannot safely accommodate its traffic volume at modern geometric standards, increasing accident risk."
+      }
+    ],
+    "data_gaps": [
+      "No inspection date recorded in dataset — critical to verify scour monitoring and inspection are current",
+      "Year Reconstructed = 0 indicates no reconstruction — unclear if any major rehabilitation has occurred",
+      "No element-level data on specific steel truss member conditions",
+      "Scour countermeasure installation status (referenced in Item 113 coding) not confirmed",
+      "No data on seismic retrofit status for a pre-code bridge in a seismically active region"
+    ],
+    "recommended_actions": [
+      {
+        "priority": 1,
+        "action": "Implement enhanced scour monitoring program",
+        "rationale": "With a scour critical rating of 3 and structural deterioration, real-time scour monitoring during flood events is essential to provide early warning of foundation instability."
+      },
+      {
+        "priority": 2,
+        "action": "Conduct load rating analysis with current condition data",
+        "rationale": "Given multi-component deterioration and high ADT, verify that the current load rating accurately reflects reduced structural capacity and that any needed posting is in place."
+      },
+      {
+        "priority": 3,
+        "action": "Prioritize for replacement in capital program",
+        "rationale": "The combination of extreme age, multi-system deterioration, scour vulnerability, and geometric inadequacy makes rehabilitation unlikely to be cost-effective. Replacement planning should begin immediately."
+      },
+      {
+        "priority": 4,
+        "action": "Assess seismic vulnerability",
+        "rationale": "A 1935 steel truss bridge with foundation scour issues in Washington's seismically active region should be evaluated for seismic risk, particularly given the Cascadia Subduction Zone threat."
+      }
+    ]
+  }
+}
