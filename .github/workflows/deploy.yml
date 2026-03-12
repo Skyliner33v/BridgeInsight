@@ -30,7 +30,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Install wasm-tools workload
-        run: dotnet workload install wasm-tools
+        run: dotnet workload install wasm-tools-net8
 
       - name: Publish
         run: dotnet publish src/BridgeInsight/BridgeInsight.csproj -c Release -o release
