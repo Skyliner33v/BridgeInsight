@@ -38,6 +38,11 @@
                 </div>
             </div>
 
+            <div class="browser-notice">
+                <span class="browser-notice-icon">&#9432;</span>
+                <p>BridgeInsight runs entirely in your browser — SQLite database, AI inference, and all data processing happen client-side via WebAssembly. First loads may take a moment while the runtime initializes.</p>
+            </div>
+
             <div class="app-nav-cards">
                 <a href="bridgeinsight/explorer" class="app-nav-card">
                     <h3>Bridge Explorer</h3>
@@ -49,8 +54,9 @@
                     <p>Generate AI-powered risk briefings across multiple bridges with tier classification, pattern analysis, and funding narratives.</p>
                     <span class="app-nav-link">Open Analysis &rarr;</span>
                 </a>
-                <a href="bridgeinsight/condition-ai" class="app-nav-card">
-                    <h3>Condition AI <span class="badge badge-demo" style="font-size: 0.6rem; vertical-align: middle; margin-left: 0.5rem;">Prototype</span></h3>
+                <a href="bridgeinsight/condition-ai" class="app-nav-card app-nav-card--prototype">
+                    <span class="prototype-ribbon">Exploratory Prototype</span>
+                    <h3>Condition AI</h3>
                     <p>In-browser ML inference using ONNX Runtime Web. Predicts bridge deterioration risk from NBI features — no server required.</p>
                     <span class="app-nav-link">Open Condition AI &rarr;</span>
                 </a>

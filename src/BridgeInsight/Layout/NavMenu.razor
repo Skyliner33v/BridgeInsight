@@ -12,11 +12,11 @@
         </button>
 
         <div class="nav-links @(collapseNavMenu ? "" : "nav-links--open")">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Home</NavLink>
-            <NavLink class="nav-link" href="about">About</NavLink>
-            <NavLink class="nav-link" href="projects">Projects</NavLink>
-            <NavLink class="nav-link" href="bridgeinsight">BridgeInsight</NavLink>
-            <NavLink class="nav-link" href="contact">Contact</NavLink>
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseMenu">Home</NavLink>
+            <NavLink class="nav-link" href="about" @onclick="CloseMenu">About</NavLink>
+            <NavLink class="nav-link" href="projects" @onclick="CloseMenu">Projects</NavLink>
+            <NavLink class="nav-link" href="bridgeinsight" @onclick="CloseMenu">BridgeInsight</NavLink>
+            <NavLink class="nav-link" href="contact" @onclick="CloseMenu">Contact</NavLink>
         </div>
     </div>
 </nav>
@@ -27,5 +27,10 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void CloseMenu()
+    {
+        collapseNavMenu = true;
     }
 }

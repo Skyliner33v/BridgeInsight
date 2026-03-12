@@ -70,6 +70,69 @@
     font-size: 0.875rem;
 }
 
+/* ── Prototype Card ── */
+
+.app-nav-card--prototype {
+    position: relative;
+    border-color: rgba(196, 167, 60, 0.35);
+    background: linear-gradient(135deg, var(--color-surface) 0%, rgba(196, 167, 60, 0.04) 100%);
+    overflow: hidden;
+}
+
+.app-nav-card--prototype:hover {
+    border-color: rgba(196, 167, 60, 0.7);
+    box-shadow: 0 4px 16px rgba(196, 167, 60, 0.12);
+}
+
+.app-nav-card--prototype h3 {
+    color: #8B7A2E;
+}
+
+.app-nav-card--prototype .app-nav-link {
+    color: #8B7A2E;
+}
+
+.prototype-ribbon {
+    display: inline-block;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: rgba(196, 167, 60, 0.14);
+    color: #8B7A2E;
+    margin-bottom: var(--space-sm);
+}
+
+/* ── Browser Notice ── */
+
+.browser-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
+.browser-notice-icon {
+    font-size: 1.125rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+    line-height: 1.6;
+}
+
+.browser-notice p {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
 .demo-notice {
     background: var(--color-surface-alt);
     border: 1px solid var(--color-border);
