@@ -1,2 +1,0 @@
-C:\Users\skyli\Desktop\Repos\MayvueProject\release\e_sqlite3.a
-C:\Users\skyli\Desktop\Repos\MayvueProject\release\web.config
