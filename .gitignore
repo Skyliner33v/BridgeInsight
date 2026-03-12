@@ -32,3 +32,6 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Personal / private files
+private/
