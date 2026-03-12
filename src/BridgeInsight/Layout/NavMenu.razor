@@ -1,3 +1,6 @@
+@inject NavigationManager Nav
+@implements IDisposable
+
 <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="container nav-container">
         <a class="nav-brand" href="">
@@ -12,11 +15,11 @@
         </button>
 
         <div class="nav-links @(collapseNavMenu ? "" : "nav-links--open")">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All" @onclick="CloseMenu">Home</NavLink>
-            <NavLink class="nav-link" href="about" @onclick="CloseMenu">About</NavLink>
-            <NavLink class="nav-link" href="projects" @onclick="CloseMenu">Projects</NavLink>
-            <NavLink class="nav-link" href="bridgeinsight" @onclick="CloseMenu">BridgeInsight</NavLink>
-            <NavLink class="nav-link" href="contact" @onclick="CloseMenu">Contact</NavLink>
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Home</NavLink>
+            <NavLink class="nav-link" href="about">About</NavLink>
+            <NavLink class="nav-link" href="projects">Projects</NavLink>
+            <NavLink class="nav-link" href="bridgeinsight">BridgeInsight</NavLink>
+            <NavLink class="nav-link" href="contact">Contact</NavLink>
         </div>
     </div>
 </nav>
@@ -24,13 +27,24 @@
 @code {
     private bool collapseNavMenu = true;
 
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 
-    private void CloseMenu()
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
     {
         collapseNavMenu = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
     }
 }

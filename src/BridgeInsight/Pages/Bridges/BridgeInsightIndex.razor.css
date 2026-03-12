@@ -160,7 +160,7 @@
     border-left: 4px solid var(--color-accent);
     border-radius: var(--border-radius);
     padding: var(--space-lg);
-    margin-top: var(--space-lg);
+    margin-bottom: var(--space-lg);
 }
 
 .api-section h4 {
