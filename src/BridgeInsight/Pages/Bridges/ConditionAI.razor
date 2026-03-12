@@ -1,0 +1,452 @@
+@page "/bridgeinsight/condition-ai"
+@inject BridgeDataService BridgeService
+@inject DatabaseService DbService
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<PageTitle>Condition AI — BridgeInsight</PageTitle>
+
+<div class="page-header">
+    <div class="container">
+        <div class="header-row">
+            <div>
+                <h1>Bridge Condition Intelligence</h1>
+                <p class="page-subtitle">In-browser ML inference using ONNX Runtime Web</p>
+            </div>
+            <span class="prototype-badge">Prototype</span>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        @if (!DbService.IsInitialized)
+        {
+            <div class="loading-results">
+                <div class="spinner"></div>
+                <p>Loading bridge data...</p>
+            </div>
+        }
+        else
+        {
+            <!-- Intro -->
+            <div class="intro-text">
+                <p>
+                    This prototype explores how <strong>ONNX Runtime Web</strong> can bring machine learning inference
+                    directly into the browser — no server, no API calls, no data leaving the client. A small neural network
+                    predicts bridge deterioration risk from NBI features, running entirely in WebAssembly.
+                </p>
+                <p>
+                    The model encodes known engineering heuristics (age, traffic load, condition ratings, scour vulnerability)
+                    as a feedforward network exported to ONNX format. In production, this architecture would be trained on
+                    historical inspection data to identify bridges most likely to deteriorate before their next scheduled inspection.
+                </p>
+            </div>
+
+            <!-- ONNX Inference Section -->
+            <div class="card inference-card">
+                <div class="card-header">
+                    <h2>Deterioration Risk Prediction</h2>
+                    <div class="tech-tags">
+                        <span class="tech-tag">ONNX Runtime Web</span>
+                        <span class="tech-tag">WebAssembly</span>
+                        <span class="tech-tag">Neural Network</span>
+                    </div>
+                </div>
+
+                <p class="card-description">
+                    Select a bridge portfolio and run real ML inference in your browser. The model evaluates
+                    age, traffic, structural condition, scour risk, material type, and truck loading to produce
+                    a deterioration risk score.
+                </p>
+
+                <div class="inference-controls">
+                    <div class="control-group">
+                        <button class="btn btn-sm @(selectionMode == "worst" ? "btn-accent" : "btn-outline")"
+                                @onclick='() => LoadBridges("worst")'>
+                            Top 20 Worst Condition
+                        </button>
+                        <button class="btn btn-sm @(selectionMode == "sd" ? "btn-accent" : "btn-outline")"
+                                @onclick='() => LoadBridges("sd")'>
+                            Structurally Deficient
+                        </button>
+                    </div>
+
+                    @if (bridges.Count > 0)
+                    {
+                        <div class="inference-action">
+                            <span class="bridge-count">@bridges.Count bridges loaded</span>
+                            <button class="btn btn-accent" @onclick="RunInference" disabled="@isRunning">
+                                @(isRunning ? "Running Inference..." : "Run ONNX Inference")
+                            </button>
+                        </div>
+                    }
+                </div>
+
+                @if (isRunning)
+                {
+                    <div class="loading-results">
+                        <div class="spinner"></div>
+                        <p>Loading ONNX model and running inference...</p>
+                    </div>
+                }
+                else if (results != null)
+                {
+                    <div class="inference-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Runtime</span>
+                            <span class="meta-value">ONNX Runtime Web (WASM)</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Model</span>
+                            <span class="meta-value">bridge-risk-v1 (895 bytes, 6→8→1 feedforward)</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Inference Time</span>
+                            <span class="meta-value inference-time">@results.InferenceTimeMs ms for @results.BridgeCount bridges</span>
+                        </div>
+                    </div>
+
+                    <div class="results-grid">
+                        @foreach (var item in results.Items.OrderByDescending(i => i.RiskScore))
+                        {
+                            <div class="result-card result-card--@item.RiskTier.ToLower()">
+                                <div class="result-header">
+                                    <div>
+                                        <strong>@item.FacilityCarried</strong>
+                                        <span class="mono">@item.StructureNumber</span>
+                                    </div>
+                                    <div class="risk-score risk-score--@item.RiskTier.ToLower()">
+                                        @item.RiskScore.ToString("P0")
+                                    </div>
+                                </div>
+                                <div class="risk-tier">@item.RiskTier Risk</div>
+                                <div class="feature-bars">
+                                    <div class="feature-bar">
+                                        <span class="feature-label">Age (@item.Age yrs)</span>
+                                        <div class="bar-track"><div class="bar-fill" style="width: @(item.NormalizedAge * 100)%"></div></div>
+                                    </div>
+                                    <div class="feature-bar">
+                                        <span class="feature-label">Traffic (@item.ADT.ToString("N0") ADT)</span>
+                                        <div class="bar-track"><div class="bar-fill" style="width: @(item.NormalizedADT * 100)%"></div></div>
+                                    </div>
+                                    <div class="feature-bar">
+                                        <span class="feature-label">Condition (@item.MinCondition/9)</span>
+                                        <div class="bar-track"><div class="bar-fill bar-fill--inverted" style="width: @((1.0 - item.NormalizedCondition) * 100)%"></div></div>
+                                    </div>
+                                    <div class="feature-bar">
+                                        <span class="feature-label">Scour</span>
+                                        <div class="bar-track"><div class="bar-fill @(item.ScourFlag > 0 ? "bar-fill--warning" : "")" style="width: @(item.ScourFlag * 100)%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Vision Pipeline Concept -->
+            <div class="card concept-card">
+                <div class="card-header">
+                    <h2>Vision Inspection Pipeline</h2>
+                    <span class="concept-badge">Proposed Architecture</span>
+                </div>
+
+                <p class="card-description">
+                    Bridge deck inspections currently rely on manual visual assessment. Computer vision models
+                    like YOLO can automate defect detection — trained to identify cracks, spalling, delamination,
+                    and corrosion from inspection photos, then exported to ONNX for deployment at the edge or in-browser.
+                </p>
+
+                <div class="pipeline-architecture">
+                    <div class="arch-step">
+                        <div class="arch-icon">📷</div>
+                        <h4>Image Capture</h4>
+                        <p>Deck photos from routine NBIS inspections or drone surveys</p>
+                    </div>
+                    <div class="arch-arrow">&rarr;</div>
+                    <div class="arch-step">
+                        <div class="arch-icon">🔍</div>
+                        <h4>YOLOv8 Detection</h4>
+                        <p>Real-time object detection trained on bridge defect datasets</p>
+                    </div>
+                    <div class="arch-arrow">&rarr;</div>
+                    <div class="arch-step">
+                        <div class="arch-icon">📦</div>
+                        <h4>ONNX Export</h4>
+                        <p>Model-agnostic format for cross-platform deployment</p>
+                    </div>
+                    <div class="arch-arrow">&rarr;</div>
+                    <div class="arch-step">
+                        <div class="arch-icon">⚡</div>
+                        <h4>Edge Inference</h4>
+                        <p>ONNX Runtime on tablet, laptop, or browser — no cloud required</p>
+                    </div>
+                    <div class="arch-arrow">&rarr;</div>
+                    <div class="arch-step">
+                        <div class="arch-icon">🏗️</div>
+                        <h4>BrM Integration</h4>
+                        <p>Defect data feeds AASHTOWare BrM element-level inspection records</p>
+                    </div>
+                </div>
+
+                <h3 class="subsection-title">Sample Detection Output</h3>
+                <p class="card-description">
+                    Example of what a trained bridge deck defect detection model would produce for a single inspection image:
+                </p>
+
+                <div class="detection-table-wrapper">
+                    <table class="detection-table">
+                        <thead>
+                            <tr>
+                                <th>Defect Type</th>
+                                <th>Confidence</th>
+                                <th>Location</th>
+                                <th>Severity</th>
+                                <th>Element</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="defect-tag defect-tag--critical">Transverse Crack</span></td>
+                                <td>94.2%</td>
+                                <td>Deck panel 3, midspan</td>
+                                <td class="severity severity--high">CS3 — Moderate</td>
+                                <td>Element 12 — Deck</td>
+                            </tr>
+                            <tr>
+                                <td><span class="defect-tag defect-tag--warning">Spalling</span></td>
+                                <td>87.6%</td>
+                                <td>Deck panel 1, near joint</td>
+                                <td class="severity severity--high">CS3 — Moderate</td>
+                                <td>Element 12 — Deck</td>
+                            </tr>
+                            <tr>
+                                <td><span class="defect-tag defect-tag--info">Efflorescence</span></td>
+                                <td>91.1%</td>
+                                <td>Underside, bent 2</td>
+                                <td class="severity severity--low">CS2 — Fair</td>
+                                <td>Element 215 — Soffit</td>
+                            </tr>
+                            <tr>
+                                <td><span class="defect-tag defect-tag--warning">Delamination</span></td>
+                                <td>78.3%</td>
+                                <td>Deck panel 2, wheel path</td>
+                                <td class="severity severity--critical">CS4 — Severe</td>
+                                <td>Element 12 — Deck</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Design Decisions -->
+            <div class="card decisions-card">
+                <h2>Design Decisions & Technical Notes</h2>
+
+                <div class="decisions-grid">
+                    <div class="decision">
+                        <h4>Why ONNX?</h4>
+                        <p>
+                            ONNX (Open Neural Network Exchange) provides a model-agnostic format that decouples
+                            training from deployment. Models trained in PyTorch, TensorFlow, or scikit-learn can
+                            all export to ONNX, then run via ONNX Runtime on .NET, Python, JavaScript, or C++.
+                            For bridge infrastructure, this means a single model artifact deploys to cloud APIs,
+                            field tablets (via .NET MAUI), and web browsers (via ONNX Runtime Web) without rewriting
+                            inference code.
+                        </p>
+                    </div>
+                    <div class="decision">
+                        <h4>Why YOLO for Bridge Inspection?</h4>
+                        <p>
+                            YOLOv8 excels at real-time object detection — processing full inspection images in
+                            milliseconds. For bridge deck condition surveys, a fine-tuned YOLO model can detect
+                            cracks, spalling, delamination, and corrosion staining simultaneously, outputting
+                            bounding boxes with confidence scores that map directly to AASHTO element-level
+                            condition states (CS1–CS4). The model exports natively to ONNX via Ultralytics.
+                        </p>
+                    </div>
+                    <div class="decision">
+                        <h4>Python ML Pipeline</h4>
+                        <p>
+                            The training pipeline uses Python's ML ecosystem: pandas for NBI data preprocessing,
+                            scikit-learn or PyTorch for model training, and skl2onnx/torch.onnx for ONNX export.
+                            Historical inspection data (condition ratings over time) provides training labels —
+                            bridges whose ratings dropped between inspection cycles are positive deterioration examples.
+                            Cross-validation ensures the model generalizes across different bridge types and regions.
+                        </p>
+                    </div>
+                    <div class="decision">
+                        <h4>OpenTelemetry for ML Observability</h4>
+                        <p>
+                            In production, model inference should be instrumented with OpenTelemetry: tracking
+                            inference latency (P50/P95/P99), prediction distribution drift, input feature distributions,
+                            and error rates. Custom metrics like <code>bridge.inference.risk_score</code> and
+                            <code>bridge.inference.duration_ms</code> would feed dashboards and alerting. OTel's
+                            vendor-neutral collector pattern means the same instrumentation works with Azure Monitor,
+                            Datadog, or Prometheus.
+                        </p>
+                    </div>
+                    <div class="decision">
+                        <h4>LLM Evaluation & Benchmarking</h4>
+                        <p>
+                            The existing Claude RAG pipeline (Portfolio Risk Narrative) should be evaluated for
+                            accuracy, consistency, and hallucination rate. A benchmark suite would compare AI-generated
+                            risk tiers against expert engineer classifications across a test set of bridge portfolios.
+                            Metrics: classification agreement rate, evidence citation accuracy, and response consistency
+                            across multiple runs. This evaluation framework would inform model selection, prompt
+                            optimization, and confidence thresholds for production deployment.
+                        </p>
+                    </div>
+                    <div class="decision">
+                        <h4>Edge Deployment for Field Inspectors</h4>
+                        <p>
+                            Bridge inspectors often work in areas with limited connectivity — under bridges, in
+                            remote counties, or inside box girders. ONNX Runtime's cross-platform support enables
+                            offline inference on field tablets running .NET MAUI or progressive web apps. The
+                            same model that runs in this browser prototype could power real-time condition assessment
+                            during inspections, with results syncing to BrM when connectivity returns.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private List<Bridge> bridges = new();
+    private string selectionMode = "";
+    private bool isRunning;
+    private InferenceResults? results;
+    private bool onnxInitialized;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!DbService.IsInitialized)
+            await DbService.InitializeAsync();
+    }
+
+    private async Task LoadBridges(string mode)
+    {
+        selectionMode = mode;
+        results = null;
+
+        var criteria = new BridgeSearchCriteria { PageSize = 20, Page = 1, SortBy = "Condition" };
+        if (mode == "sd") criteria.StructurallyDeficientOnly = true;
+
+        var result = await BridgeService.SearchBridgesAsync(criteria);
+        bridges = result.Bridges;
+    }
+
+    private async Task RunInference()
+    {
+        if (bridges.Count == 0) return;
+
+        isRunning = true;
+        StateHasChanged();
+
+        try
+        {
+            // Initialize ONNX session if needed
+            if (!onnxInitialized)
+            {
+                var initResult = await JS.InvokeAsync<bool>("OnnxBridge.init", "data/models/bridge-risk.onnx");
+                onnxInitialized = initResult;
+                if (!initResult)
+                {
+                    isRunning = false;
+                    return;
+                }
+            }
+
+            // Build feature vectors for each bridge
+            var featureArrays = bridges.Select(b => new double[]
+            {
+                Math.Clamp(b.Age / 150.0, 0, 1),                                           // normalized_age
+                Math.Clamp((b.AverageDailyTraffic ?? 0) / 100000.0, 0, 1),                 // normalized_adt
+                Math.Clamp((b.LowestConditionRating ?? 5) / 9.0, 0, 1),                     // min_condition_norm
+                (b.ScourCritical == "3" || b.ScourCritical == "2" || b.ScourCritical == "1" || b.ScourCritical == "0") ? 1.0 : 0.0,  // scour_flag
+                b.MainSpanMaterial switch { "7" => 0.6, "3" or "4" => 0.3, _ => 0.15 },    // material_risk (timber=0.6, steel=0.3, other=0.15)
+                Math.Clamp((b.TruckTrafficPercent ?? 5) / 100.0, 0, 1)                      // truck_pct_norm
+            }).ToArray();
+
+            // Run inference
+            var onnxResult = await JS.InvokeAsync<OnnxResult>("OnnxBridge.predict", (object)featureArrays);
+
+            if (onnxResult != null)
+            {
+                var items = new List<BridgeRiskItem>();
+                for (int i = 0; i < bridges.Count && i < onnxResult.Scores.Length; i++)
+                {
+                    var b = bridges[i];
+                    var score = onnxResult.Scores[i];
+                    items.Add(new BridgeRiskItem
+                    {
+                        StructureNumber = b.StructureNumber,
+                        FacilityCarried = b.FacilityCarried,
+                        RiskScore = score,
+                        RiskTier = score switch { >= 0.7 => "Critical", >= 0.5 => "High", >= 0.3 => "Moderate", _ => "Low" },
+                        Age = b.Age,
+                        ADT = b.AverageDailyTraffic ?? 0,
+                        MinCondition = b.LowestConditionRating ?? 5,
+                        NormalizedAge = Math.Clamp(b.Age / 150.0, 0, 1),
+                        NormalizedADT = Math.Clamp((b.AverageDailyTraffic ?? 0) / 100000.0, 0, 1),
+                        NormalizedCondition = Math.Clamp((b.LowestConditionRating ?? 5) / 9.0, 0, 1),
+                        ScourFlag = (b.ScourCritical == "3" || b.ScourCritical == "2" || b.ScourCritical == "1" || b.ScourCritical == "0") ? 1.0 : 0.0
+                    });
+                }
+
+                results = new InferenceResults
+                {
+                    Items = items,
+                    InferenceTimeMs = onnxResult.InferenceTimeMs,
+                    BridgeCount = onnxResult.BridgeCount
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Inference error: {ex.Message}");
+        }
+        finally
+        {
+            isRunning = false;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try { await JS.InvokeVoidAsync("OnnxBridge.dispose"); } catch { }
+    }
+
+    // Models
+    private class OnnxResult
+    {
+        public double[] Scores { get; set; } = Array.Empty<double>();
+        public double InferenceTimeMs { get; set; }
+        public int BridgeCount { get; set; }
+    }
+
+    private class InferenceResults
+    {
+        public List<BridgeRiskItem> Items { get; set; } = new();
+        public double InferenceTimeMs { get; set; }
+        public int BridgeCount { get; set; }
+    }
+
+    private class BridgeRiskItem
+    {
+        public string StructureNumber { get; set; } = "";
+        public string FacilityCarried { get; set; } = "";
+        public double RiskScore { get; set; }
+        public string RiskTier { get; set; } = "";
+        public int Age { get; set; }
+        public int ADT { get; set; }
+        public int MinCondition { get; set; }
+        public double NormalizedAge { get; set; }
+        public double NormalizedADT { get; set; }
+        public double NormalizedCondition { get; set; }
+        public double ScourFlag { get; set; }
+    }
+}

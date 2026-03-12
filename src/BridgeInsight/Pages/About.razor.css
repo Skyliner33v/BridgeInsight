@@ -38,6 +38,19 @@
     color: var(--color-text-secondary);
 }
 
+.journey-phase {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-sm);
+    letter-spacing: 0.01em;
+}
+
+.about-narrative h2 + .journey-phase {
+    margin-top: var(--space-md);
+}
+
 .skills-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

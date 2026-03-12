@@ -23,6 +23,22 @@
         }
         else
         {
+            <!-- Mode Indicator -->
+            @if (hasApiKey)
+            {
+                <div class="mode-indicator mode-indicator--live">
+                    <span class="mode-badge mode-badge--live">Live</span>
+                    <span>Claude API connected — analyses will use real-time AI</span>
+                </div>
+            }
+            else
+            {
+                <div class="mode-indicator mode-indicator--demo">
+                    <span class="mode-badge mode-badge--demo">Demo</span>
+                    <span>Using pre-cached responses — <a href="/bridgeinsight">add your API key</a> for live analysis</span>
+                </div>
+            }
+
             <!-- Selection Controls -->
             <div class="card selection-card">
                 <h3>Select Bridges for Briefing</h3>
@@ -69,6 +85,100 @@
                     </div>
                 }
             </div>
+
+            <!-- Intro & How It Works (shown when no briefing yet) -->
+            @if (briefing == null && !isGenerating)
+            {
+                <div class="intro-section">
+                    <div class="intro-text">
+                        <h2>AI-Powered Portfolio Intelligence</h2>
+                        <p>
+                            Traditional bridge risk assessments require engineers to manually cross-reference
+                            condition ratings, scour codes, traffic data, and federal standards across dozens of structures.
+                            This tool automates that analysis — select a portfolio of bridges and receive a
+                            decision-ready briefing in under 60 seconds.
+                        </p>
+                        <p>
+                            Every finding traces back to specific NBI data fields and FHWA coding standards.
+                            No black-box conclusions — just <strong>explainable AI</strong> grounded in the same
+                            references bridge engineers use daily.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="how-it-works">
+                    <h3>How It Works</h3>
+                    <div class="pipeline">
+                        <div class="pipeline-step">
+                            <div class="step-number">1</div>
+                            <div class="step-icon">🗂️</div>
+                            <h4>Select Portfolio</h4>
+                            <p>Choose bridges by deficiency status, worst condition, or county — sourced from 8,400+ WA state structures in the NBI dataset</p>
+                        </div>
+                        <div class="pipeline-connector"></div>
+                        <div class="pipeline-step">
+                            <div class="step-number">2</div>
+                            <div class="step-icon">🔍</div>
+                            <h4>Data Extraction</h4>
+                            <p>Condition ratings, scour codes, ADT, material types, and structural metrics are compiled from the in-browser SQLite database</p>
+                        </div>
+                        <div class="pipeline-connector"></div>
+                        <div class="pipeline-step">
+                            <div class="step-number">3</div>
+                            <div class="step-icon">🧠</div>
+                            <h4>AI Analysis</h4>
+                            <p>Claude analyzes the portfolio using FHWA reference data as RAG context — classifying risk tiers and identifying cross-portfolio patterns</p>
+                        </div>
+                        <div class="pipeline-connector"></div>
+                        <div class="pipeline-step">
+                            <div class="step-number">4</div>
+                            <div class="step-icon">📋</div>
+                            <h4>Traceable Briefing</h4>
+                            <p>Executive summary, per-bridge evidence blocks, funding narrative, and data quality notes — every claim linked to source data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="capabilities-grid">
+                    <div class="capability-card">
+                        <div class="capability-icon">⚡</div>
+                        <h4>Risk Tier Classification</h4>
+                        <p>Bridges categorized into Immediate Attention, Near-Term Priority, Monitor, and Satisfactory tiers with rationale for each placement</p>
+                    </div>
+                    <div class="capability-card">
+                        <div class="capability-icon">📊</div>
+                        <h4>Evidence-Based Assessment</h4>
+                        <p>Per-bridge evidence blocks with condition ratings, risk factors, and one-sentence assessments — no unsupported conclusions</p>
+                    </div>
+                    <div class="capability-card">
+                        <div class="capability-icon">💰</div>
+                        <h4>Funding Prioritization</h4>
+                        <p>AI-generated funding narrative that prioritizes investment based on structural urgency, traffic impact, and deterioration trajectory</p>
+                    </div>
+                    <div class="capability-card">
+                        <div class="capability-icon">🔗</div>
+                        <h4>Full Traceability</h4>
+                        <p>Every finding references specific NBI fields and FHWA coding standards — decision-makers can verify any claim against the source data</p>
+                    </div>
+                </div>
+
+                <div class="demo-callout">
+                    <div class="callout-content">
+                        <div class="callout-icon">💡</div>
+                        <div>
+                            <strong>Try it now</strong> — Select a bridge portfolio above and click "Generate Portfolio Briefing."
+                            @if (!hasApiKey)
+                            {
+                                <span>A pre-cached demo response is available instantly, or <a href="/bridgeinsight">add your Claude API key</a> on the BridgeInsight hub for live analysis of any portfolio.</span>
+                            }
+                            else
+                            {
+                                <span>Your API key is active — analyses will use the Claude API for real-time results.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
 
             <!-- Briefing Output -->
             @if (isGenerating)
@@ -180,11 +290,28 @@
     private bool isGenerating;
     private string selectionMode = "";
     private string selectedCountyForPortfolio = "";
+    private bool hasApiKey;
+    private bool hasCheckedKey;
 
     protected override async Task OnInitializedAsync()
     {
         if (!DbService.IsInitialized)
             await DbService.InitializeAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || !hasCheckedKey)
+        {
+            hasCheckedKey = true;
+            var key = await AnalysisService.GetApiKeyAsync();
+            var newHasApiKey = !string.IsNullOrEmpty(key);
+            if (newHasApiKey != hasApiKey)
+            {
+                hasApiKey = newHasApiKey;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task SelectPreset(string mode)

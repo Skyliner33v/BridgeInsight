@@ -1,5 +1,6 @@
 @page "/bridgeinsight"
 @inject DatabaseService DbService
+@inject ClaudeAnalysisService AnalysisService
 
 <PageTitle>BridgeInsight — Bridge Data Intelligence</PageTitle>
 
@@ -48,6 +49,11 @@
                     <p>Generate AI-powered risk briefings across multiple bridges with tier classification, pattern analysis, and funding narratives.</p>
                     <span class="app-nav-link">Open Analysis &rarr;</span>
                 </a>
+                <a href="bridgeinsight/condition-ai" class="app-nav-card">
+                    <h3>Condition AI <span class="badge badge-demo" style="font-size: 0.6rem; vertical-align: middle; margin-left: 0.5rem;">Prototype</span></h3>
+                    <p>In-browser ML inference using ONNX Runtime Web. Predicts bridge deterioration risk from NBI features — no server required.</p>
+                    <span class="app-nav-link">Open Condition AI &rarr;</span>
+                </a>
             </div>
 
             <div class="demo-notice">
@@ -60,25 +66,108 @@
                 </p>
             </div>
 
-            <div class="demo-notice">
-                <h4>Demo Mode</h4>
-                <p>
-                    BridgeInsight includes pre-generated AI analyses for select bridges.
-                    For live analysis of any bridge, enter your Claude API key in the bridge detail view.
-                    Your key is stored only in your browser and sent only to Anthropic's API.
-                </p>
+            <!-- API Key / Analysis Mode Section -->
+            <div class="api-section">
+                <h4>Analysis Mode</h4>
+
+                @if (hasApiKey)
+                {
+                    <div class="api-key-active">
+                        <div class="api-active-info">
+                            <span class="mode-badge mode-badge--live">Live</span>
+                            <div>
+                                <strong>Live Analysis Active</strong>
+                                <p>Your Claude API key is stored in this browser. All bridge and portfolio analyses will use the Claude API for real-time results.</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline" @onclick="ClearApiKey">Remove Key</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="api-choice">
+                        <div class="api-option @(showApiKeyInput ? "api-option--selected" : "")" @onclick="() => showApiKeyInput = true">
+                            <div class="api-option-icon">🔑</div>
+                            <h5>Use Your API Key</h5>
+                            <p>Unlock live AI analysis for any bridge or portfolio. Calls the Claude API directly from your browser.</p>
+                            @if (showApiKeyInput)
+                            {
+                                <div class="api-key-form" @onclick:stopPropagation="true">
+                                    <input type="password" class="form-control" placeholder="sk-ant-api03-..."
+                                           @bind="apiKeyInput" @bind:event="oninput"
+                                           @onkeydown="HandleKeyDown" />
+                                    <button class="btn btn-sm btn-accent" @onclick="SaveApiKey"
+                                            disabled="@string.IsNullOrWhiteSpace(apiKeyInput)">Save Key</button>
+                                    <p class="api-key-note">Your key is stored only in this browser's localStorage and sent only to Anthropic's API. It never touches any other server.</p>
+                                </div>
+                            }
+                        </div>
+                        <div class="api-option" @onclick="() => showApiKeyInput = false">
+                            <div class="api-option-icon">📦</div>
+                            <h5>Demo Mode</h5>
+                            <p>Explore with pre-cached AI responses for select bridges and portfolios. No API key needed — works instantly.</p>
+                            <span class="mode-badge mode-badge--demo">Active by Default</span>
+                        </div>
+                    </div>
+                }
             </div>
         }
     </div>
 </section>
 
 @code {
+    private bool hasApiKey;
+    private bool showApiKeyInput;
+    private string apiKeyInput = "";
+    private bool hasCheckedKey;
+
     protected override async Task OnInitializedAsync()
     {
         if (!DbService.IsInitialized)
         {
             await DbService.InitializeAsync();
             StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || !hasCheckedKey)
+        {
+            hasCheckedKey = true;
+            var key = await AnalysisService.GetApiKeyAsync();
+            var newHasApiKey = !string.IsNullOrEmpty(key);
+            if (newHasApiKey != hasApiKey)
+            {
+                hasApiKey = newHasApiKey;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task SaveApiKey()
+    {
+        if (!string.IsNullOrWhiteSpace(apiKeyInput))
+        {
+            await AnalysisService.SetApiKeyAsync(apiKeyInput.Trim());
+            hasApiKey = true;
+            showApiKeyInput = false;
+            apiKeyInput = "";
+        }
+    }
+
+    private async Task ClearApiKey()
+    {
+        await AnalysisService.ClearApiKeyAsync();
+        hasApiKey = false;
+        showApiKeyInput = false;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SaveApiKey();
         }
     }
 }

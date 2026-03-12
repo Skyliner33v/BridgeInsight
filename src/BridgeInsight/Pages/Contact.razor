@@ -1,33 +1,120 @@
 @page "/contact"
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <PageTitle>Contact — Jason Parent</PageTitle>
 
 <div class="page-header">
-    <div class="container">
-        <h1>Contact</h1>
-        <p class="page-subtitle">Let's connect</p>
+    <div id="three-contact-container" class="header-canvas-container"></div>
+    <div class="container header-content">
+        <h1>Let's Connect</h1>
+        <p class="page-subtitle">Interested in building AI-powered bridge infrastructure tools? I'd love to talk.</p>
     </div>
 </div>
 
 <section class="section">
     <div class="container">
+
         <div class="contact-grid">
-            <div class="contact-card">
+            <a href="mailto:jasonlparent@gmail.com" class="contact-card">
+                <div class="contact-icon">✉️</div>
                 <h3>Email</h3>
-                <a href="mailto:jasonlparent@gmail.com">jasonlparent&#64;gmail.com</a>
-            </div>
-            <div class="contact-card">
+                <span class="contact-value">jasonlparent&#64;gmail.com</span>
+                <span class="contact-action">Send a message &rarr;</span>
+            </a>
+            <a href="https://github.com/Skyliner33v" target="_blank" class="contact-card">
+                <div class="contact-icon">💻</div>
                 <h3>GitHub</h3>
-                <a href="https://github.com/Skyliner33v" target="_blank">github.com/Skyliner33v</a>
-            </div>
-            <div class="contact-card">
+                <span class="contact-value">github.com/Skyliner33v</span>
+                <span class="contact-action">View projects &rarr;</span>
+            </a>
+            <a href="https://www.nwopsbridge.com" target="_blank" class="contact-card">
+                <div class="contact-icon">🌐</div>
                 <h3>NW OpsBridge</h3>
-                <a href="https://www.nwopsbridge.com" target="_blank">nwopsbridge.com</a>
-            </div>
-            <div class="contact-card">
+                <span class="contact-value">nwopsbridge.com</span>
+                <span class="contact-action">Visit site &rarr;</span>
+            </a>
+            <div class="contact-card contact-card--static">
+                <div class="contact-icon">📍</div>
                 <h3>Location</h3>
-                <p>Washington State</p>
+                <span class="contact-value">Washington State</span>
+                <span class="contact-detail">Open to remote opportunities</span>
             </div>
         </div>
+
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2>What I Bring to the Table</h2>
+                <div class="cta-grid">
+                    <div class="cta-item">
+                        <div class="cta-item-icon">🏗️</div>
+                        <div>
+                            <h4>Domain Expertise</h4>
+                            <p>20 years in bridge infrastructure — from under-bridge inspection truck operations to building the data systems that power modern bridge management programs.</p>
+                        </div>
+                    </div>
+                    <div class="cta-item">
+                        <div class="cta-item-icon">🧠</div>
+                        <div>
+                            <h4>AI + Engineering</h4>
+                            <p>Not just using AI — building explainable AI tools grounded in FHWA standards where every conclusion traces back to verifiable data. Engineers trust what they can verify.</p>
+                        </div>
+                    </div>
+                    <div class="cta-item">
+                        <div class="cta-item-icon">🔧</div>
+                        <div>
+                            <h4>Full-Stack Builder</h4>
+                            <p>Blazor, .NET, SQL Server, Python, CI/CD — the complete pipeline from database to deployment. Self-directed with 8 years of independent development at WSDOT.</p>
+                        </div>
+                    </div>
+                    <div class="cta-item">
+                        <div class="cta-item-icon">🎯</div>
+                        <div>
+                            <h4>BrM Every Day</h4>
+                            <p>Daily AASHTOWare BrM user who's built ETL pipelines, reverse-engineered database schemas, and provisioned environments across dev, test, and production.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="availability">
+            <div class="availability-badge">Available</div>
+            <p>
+                Currently exploring opportunities where bridge domain expertise meets modern software development.
+                If you're building tools for infrastructure engineers, let's talk about how
+                I can contribute from day one.
+            </p>
+        </div>
+
     </div>
 </section>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("ThreeContact.init", "three-contact-container");
+            }
+            catch
+            {
+                // Three.js not loaded or WebGL not available — degrade gracefully
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("ThreeContact.dispose");
+        }
+        catch
+        {
+            // Already disposed or JS context not available
+        }
+    }
+}
