@@ -40,6 +40,27 @@
     background: linear-gradient(135deg, var(--color-surface) 0%, rgba(42, 157, 143, 0.03) 100%);
 }
 
+.project-card--open-source {
+    border: 2px solid #4f46e5;
+    background: linear-gradient(135deg, var(--color-surface) 0%, rgba(79, 70, 229, 0.03) 100%);
+}
+
+.project-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin: var(--space-md) 0;
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.project-stats .stat {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4f46e5;
+}
+
 .project-badge {
     display: flex;
     gap: var(--space-sm);
