@@ -606,14 +606,6 @@ Answer the question following the JSON format specified, grounded only in the se
                 }
                 catch { }
             }
-
-            // Return a generic demo response if no specific match
-            var genericDemo = await _http.GetFromJsonAsync<DemoResponse>("data/demo-responses/bridge-demo-1.json", JsonOptions);
-            if (genericDemo != null)
-            {
-                genericDemo.Analysis.IsDemo = true;
-                return genericDemo.Analysis;
-            }
         }
         catch { }
 
