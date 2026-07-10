@@ -1,0 +1,286 @@
+@page "/bridgeinsight/ask-snbi"
+@inject SnbiRetrievalService Retrieval
+@inject ClaudeAnalysisService AnalysisService
+
+<PageTitle>Ask the SNBI Guide — BridgeInsight</PageTitle>
+
+<div class="page-header">
+    <div class="container">
+        <h1>Ask the SNBI Guide</h1>
+        <p class="page-subtitle">Document-grounded Q&amp;A over the FHWA Specifications for the National Bridge Inventory</p>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <!-- Mode Indicator -->
+        @if (hasApiKey)
+        {
+            <div class="mode-indicator mode-indicator--live">
+                <span class="mode-badge mode-badge--live">Live</span>
+                <span>Claude API connected — ask any question about the SNBI specification</span>
+            </div>
+        }
+        else
+        {
+            <div class="mode-indicator mode-indicator--demo">
+                <span class="mode-badge mode-badge--demo">Demo</span>
+                <span>Pre-cached answers for the sample questions below — <a href="/bridgeinsight">add your API key</a> to ask anything</span>
+            </div>
+        }
+
+        <!-- Question Input -->
+        <div class="card ask-card">
+            <h3>Ask a Question</h3>
+            <p class="ask-description">
+                Every answer is grounded exclusively in the SNBI specification text retrieved below —
+                each claim cites the section it came from, and questions the retrieved sections
+                cannot answer are declined rather than guessed.
+            </p>
+            <div class="ask-form">
+                <textarea class="form-control ask-input" rows="2"
+                          placeholder="e.g. How is the bridge condition classification of Good, Fair, or Poor determined?"
+                          @bind="question" @bind:event="oninput"
+                          @onkeydown="HandleKeyDown"></textarea>
+                <button class="btn btn-accent" @onclick="Ask"
+                        disabled="@(isAsking || string.IsNullOrWhiteSpace(question))">
+                    @(isAsking ? "Asking..." : "Ask")
+                </button>
+            </div>
+            <div class="sample-questions">
+                <span class="sample-label">@(hasApiKey ? "Sample questions:" : "Demo questions:")</span>
+                @foreach (var sample in SampleQuestions)
+                {
+                    <button class="sample-chip" @onclick="() => AskSample(sample)" disabled="@isAsking">@sample</button>
+                }
+            </div>
+        </div>
+
+        @if (isAsking)
+        {
+            <div class="card loading-card">
+                <div class="spinner"></div>
+                <p>@loadingMessage</p>
+            </div>
+        }
+
+        <!-- Retrieval Transparency Panel -->
+        @if (hits != null && hits.Count > 0)
+        {
+            <div class="card transparency-card">
+                <div class="transparency-header">
+                    <h3>Retrieved Sections</h3>
+                    <span class="transparency-note">Ranked in your browser by lexical scoring — these excerpts are the only material the AI sees</span>
+                </div>
+                <div class="hit-list">
+                    @foreach (var hit in hits)
+                    {
+                        var maxScore = hits[0].Score;
+                        <div class="hit-row">
+                            <button class="hit-toggle" @onclick="() => ToggleHit(hit.Chunk.Id)">
+                                <span class="section-badge">@hit.Chunk.Section</span>
+                                <span class="hit-title">@hit.Chunk.Title</span>
+                                <span class="hit-score">
+                                    <span class="score-track"><span class="score-fill" style="width: @GetScoreWidth(hit.Score, maxScore)%"></span></span>
+                                    <span class="score-value">@hit.Score.ToString("F1")</span>
+                                </span>
+                                <span class="hit-chevron">@(expandedHits.Contains(hit.Chunk.Id) ? "▾" : "▸")</span>
+                            </button>
+                            @if (expandedHits.Contains(hit.Chunk.Id))
+                            {
+                                <div class="hit-text">@hit.Chunk.Text</div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (hits != null && !isAsking)
+        {
+            <div class="card transparency-card">
+                <h3>Retrieved Sections</h3>
+                <p class="no-hits">No SNBI sections matched this question's terms.</p>
+            </div>
+        }
+
+        <!-- Answer -->
+        @if (result != null && !isAsking)
+        {
+            <div class="card answer-card">
+                <div class="answer-header">
+                    <h3>Answer</h3>
+                    @if (result.IsDemo)
+                    {
+                        <span class="badge badge-demo">Demo Mode</span>
+                    }
+                </div>
+
+                @if (result.Error != null)
+                {
+                    <div class="analysis-error">
+                        <p>@result.Error</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="answer-text">@result.Answer</div>
+
+                    @if (result.Citations.Count > 0)
+                    {
+                        <div class="citations-section">
+                            <h4>Citations</h4>
+                            <p class="citations-note">Click a section to see the quoted evidence and the full source excerpt.</p>
+                            <div class="citation-chips">
+                                @for (var i = 0; i < result.Citations.Count; i++)
+                                {
+                                    var index = i;
+                                    var citation = result.Citations[index];
+                                    <button class="citation-chip @(expandedCitation == index ? "citation-chip--open" : "")"
+                                            @onclick="() => ToggleCitation(index)">
+                                        <span class="section-badge">@citation.Section</span>
+                                        <span class="citation-chevron">@(expandedCitation == index ? "▾" : "▸")</span>
+                                    </button>
+                                }
+                            </div>
+                            @if (expandedCitation is int open && open < result.Citations.Count)
+                            {
+                                var citation = result.Citations[open];
+                                var sourceChunk = Retrieval.FindBySection(citation.Section, citation.Quote);
+                                <div class="citation-detail">
+                                    <blockquote class="citation-quote">&ldquo;@citation.Quote&rdquo;</blockquote>
+                                    @if (sourceChunk != null)
+                                    {
+                                        <div class="citation-source">
+                                            <div class="citation-source-title">Source: [@sourceChunk.Section] @sourceChunk.Title</div>
+                                            <div class="citation-source-text">@sourceChunk.Text</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="citation-source-missing">Source section @citation.Section was not found in the extracted corpus.</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <div class="analysis-meta">
+                        Generated @result.GeneratedAt.ToString("MMM dd, yyyy HH:mm UTC")
+                        @if (result.IsDemo)
+                        {
+                            <span> &middot; Pre-cached demo response</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Corpus Note -->
+        <div class="corpus-note">
+            <h4>About the Corpus</h4>
+            <p>
+                The knowledge base is the official FHWA <em>Specifications for the National Bridge Inventory</em>
+                (Publication No. FHWA-HIF-22-017, March 2022 with errata #1), extracted into
+                @(Retrieval.IsLoaded ? Retrieval.ChunkCount.ToString() : "200+") section-level chunks at build time —
+                the introduction, all 154 data item definitions (B.ID.01 through B.W.03), section overviews
+                including the component condition rating code tables, and Appendix C condition rating guidance.
+                The comprehensive example bridge walkthrough and Appendixes A&ndash;B (example data sets and indexes)
+                are not included, and figures and some multi-column tables are flattened by PDF text extraction —
+                always verify against the <a href="https://www.fhwa.dot.gov/bridge/snbi/errata1_to_snbi_march_2022_publication.pdf"
+                target="_blank" rel="noopener">official publication</a> before relying on an answer.
+                The deployed app never contacts FHWA at runtime.
+            </p>
+        </div>
+    </div>
+</section>
+
+@code {
+    private static readonly string[] SampleQuestions =
+    {
+        "What do the component condition rating codes mean?",
+        "When is a bridge classified as being in Poor condition?",
+        "What inspection types does the SNBI define?"
+    };
+
+    private string question = "";
+    private bool isAsking;
+    private string loadingMessage = "";
+    private List<SnbiRetrievalHit>? hits;
+    private SnbiAnswerResult? result;
+    private readonly HashSet<string> expandedHits = new();
+    private int? expandedCitation;
+    private bool hasApiKey;
+    private bool hasCheckedKey;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Retrieval.EnsureLoadedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || !hasCheckedKey)
+        {
+            hasCheckedKey = true;
+            var key = await AnalysisService.GetApiKeyAsync();
+            var newHasApiKey = !string.IsNullOrEmpty(key);
+            if (newHasApiKey != hasApiKey)
+            {
+                hasApiKey = newHasApiKey;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task AskSample(string sample)
+    {
+        question = sample;
+        await Ask();
+    }
+
+    private async Task Ask()
+    {
+        if (string.IsNullOrWhiteSpace(question) || isAsking) return;
+
+        isAsking = true;
+        result = null;
+        hits = null;
+        expandedHits.Clear();
+        expandedCitation = null;
+        loadingMessage = "Retrieving relevant SNBI sections in your browser...";
+        StateHasChanged();
+
+        hits = await Retrieval.RetrieveAsync(question, topK: 5);
+
+        loadingMessage = hasApiKey
+            ? "Generating grounded answer from the retrieved sections..."
+            : "Loading pre-cached demo answer...";
+        StateHasChanged();
+
+        result = await AnalysisService.AskSnbiAsync(question, hits.Select(h => h.Chunk).ToList());
+
+        isAsking = false;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await Ask();
+        }
+    }
+
+    private void ToggleHit(string chunkId)
+    {
+        if (!expandedHits.Remove(chunkId))
+            expandedHits.Add(chunkId);
+    }
+
+    private void ToggleCitation(int index)
+    {
+        expandedCitation = expandedCitation == index ? null : index;
+    }
+
+    private static string GetScoreWidth(double score, double maxScore)
+        => maxScore <= 0 ? "0" : Math.Max(6, score / maxScore * 100).ToString("F0");
+}

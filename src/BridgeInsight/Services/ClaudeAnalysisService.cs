@@ -141,6 +141,58 @@ public class ClaudeAnalysisService
         }
     }
 
+    public async Task<SnbiAnswerResult> AskSnbiAsync(string question, List<SnbiChunk> retrievedChunks)
+    {
+        var apiKey = await GetApiKeyAsync();
+
+        if (string.IsNullOrEmpty(apiKey))
+            return await GetDemoSnbiAnswerAsync(question);
+
+        try
+        {
+            var systemPrompt = BuildSnbiSystemPrompt();
+            var userPrompt = BuildSnbiPrompt(question, retrievedChunks);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.anthropic.com/v1/messages");
+            request.Headers.Add("x-api-key", apiKey);
+            request.Headers.Add("anthropic-version", "2023-06-01");
+            request.Headers.Add("anthropic-dangerous-direct-browser-access", "true");
+
+            var body = new
+            {
+                model = "claude-sonnet-5",
+                max_tokens = 4096,
+                thinking = new { type = "disabled" },
+                system = systemPrompt,
+                messages = new[] { new { role = "user", content = userPrompt } }
+            };
+
+            request.Content = JsonContent.Create(body);
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return new SnbiAnswerResult
+                {
+                    Error = $"API Error ({response.StatusCode}): {error}",
+                    GeneratedAt = DateTime.UtcNow
+                };
+            }
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            return ParseSnbiResponse(responseJson);
+        }
+        catch (Exception ex)
+        {
+            return new SnbiAnswerResult
+            {
+                Error = $"Error: {ex.Message}",
+                GeneratedAt = DateTime.UtcNow
+            };
+        }
+    }
+
     private string BuildSystemPrompt()
     {
         return $@"You are BridgeInsight, an AI assistant specialized in analyzing National Bridge Inventory (NBI) data for bridge program managers and civil engineering decision-makers.
@@ -295,6 +347,45 @@ SD: {(b.IsStructurallyDeficient ? "YES" : "No")} | Type: {StructureTypes.GetMate
 Provide a comprehensive briefing following the JSON format specified.";
     }
 
+    private string BuildSnbiSystemPrompt()
+    {
+        return @"You are ""Ask the SNBI Guide"" for BridgeInsight — a document-grounded reference assistant for the FHWA Specifications for the National Bridge Inventory (SNBI), Publication No. FHWA-HIF-22-017 (March 2022 with errata #1).
+
+You will be given a question and a set of sections extracted from the SNBI. Follow these strict grounding rules:
+1. Answer ONLY from the provided sections. Do not use any outside knowledge, even if you are confident you know the answer.
+2. Cite the section identifier (e.g., B.C.01, Section 7.1, Appendix C, Introduction) for every claim you make. Include identifiers inline in the answer text where each claim is made.
+3. Support each claim with a citation containing a short verbatim quote copied exactly from the provided section text.
+4. If the provided sections do not contain the information needed to answer the question, set the answer to exactly ""Not covered in the provided sections."" with an empty citations list.
+5. Never speculate, extrapolate, or generalize beyond what the quoted text supports.
+
+Output your answer as valid JSON with this structure:
+{
+  ""answer"": ""Plain-English answer with inline section identifiers (1-3 paragraphs)"",
+  ""citations"": [
+    {
+      ""section"": ""B.C.01"",
+      ""quote"": ""short verbatim quote from that section supporting the claim""
+    }
+  ]
+}
+
+Return ONLY the JSON object, no markdown code fences or other text.";
+    }
+
+    private string BuildSnbiPrompt(string question, List<SnbiChunk> retrievedChunks)
+    {
+        var sections = string.Join("\n\n", retrievedChunks.Select(c =>
+            $"=== [{c.Section}] {c.Title} ===\n{c.Text}"));
+
+        return $@"QUESTION: {question}
+
+PROVIDED SNBI SECTIONS:
+
+{sections}
+
+Answer the question following the JSON format specified, grounded only in the sections above.";
+    }
+
     private static string FormatRating(int? rating)
     {
         if (rating == null) return "N/A";
@@ -393,6 +484,40 @@ Provide a comprehensive briefing following the JSON format specified.";
         }
     }
 
+    private SnbiAnswerResult ParseSnbiResponse(string responseJson)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(responseJson);
+            var root = doc.RootElement;
+            var content = ExtractTextContent(root);
+
+            if (string.IsNullOrEmpty(content))
+                return new SnbiAnswerResult { Error = "Empty response from API" };
+
+            content = content.Trim();
+            if (content.StartsWith("```"))
+            {
+                var firstNewline = content.IndexOf('\n');
+                content = content.Substring(firstNewline + 1);
+                if (content.EndsWith("```"))
+                    content = content.Substring(0, content.Length - 3);
+                content = content.Trim();
+            }
+
+            var answer = JsonSerializer.Deserialize<SnbiAnswerResult>(content, JsonOptions);
+            if (answer == null)
+                return new SnbiAnswerResult { Error = "Failed to parse answer response" };
+
+            answer.GeneratedAt = DateTime.UtcNow;
+            return answer;
+        }
+        catch (Exception ex)
+        {
+            return new SnbiAnswerResult { Error = $"Parse error: {ex.Message}", GeneratedAt = DateTime.UtcNow };
+        }
+    }
+
     private async Task<BridgeAnalysis> GetDemoAnalysisAsync(string structureNumber)
     {
         try
@@ -454,9 +579,50 @@ Provide a comprehensive briefing following the JSON format specified.";
         };
     }
 
+    private async Task<SnbiAnswerResult> GetDemoSnbiAnswerAsync(string question)
+    {
+        var normalizedQuestion = NormalizeQuestion(question);
+
+        try
+        {
+            var demoFiles = new[] { "snbi-demo-1.json", "snbi-demo-2.json", "snbi-demo-3.json" };
+            foreach (var file in demoFiles)
+            {
+                try
+                {
+                    var demo = await _http.GetFromJsonAsync<SnbiDemoResponse>($"data/demo-responses/{file}", JsonOptions);
+                    if (demo != null && NormalizeQuestion(demo.Question) == normalizedQuestion)
+                    {
+                        var answer = demo.Answer;
+                        answer.IsDemo = true;
+                        return answer;
+                    }
+                }
+                catch { }
+            }
+        }
+        catch { }
+
+        return new SnbiAnswerResult
+        {
+            Answer = "Demo mode: pre-cached answers are available for the three sample questions shown on this page. Enter a Claude API key on the BridgeInsight hub to ask any question about the SNBI specification.",
+            IsDemo = true,
+            GeneratedAt = DateTime.UtcNow
+        };
+    }
+
+    private static string NormalizeQuestion(string question)
+        => new string(question.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
+
     private class DemoResponse
     {
         public string StructureNumber { get; set; } = "";
         public BridgeAnalysis Analysis { get; set; } = new();
+    }
+
+    private class SnbiDemoResponse
+    {
+        public string Question { get; set; } = "";
+        public SnbiAnswerResult Answer { get; set; } = new();
     }
 }

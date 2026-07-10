@@ -1,0 +1,24 @@
+{
+  "question": "When is a bridge classified as being in Poor condition?",
+  "answer": {
+    "answer": "A bridge is classified as Poor when the lowest of its component condition ratings is 4, 3, 2, 1, or 0. Per Item B.C.12 (Bridge Condition Classification), the classification is calculated by FHWA — it is not reported by inspectors — using the minimum (i.e. lowest) condition rating code from Items B.C.01 (Deck Condition Rating), B.C.02 (Superstructure Condition Rating), B.C.03 (Substructure Condition Rating), and B.C.04 (Culvert Condition Rating). The classification codes are G (Good) for a lowest rating of 7, 8, or 9; F (Fair) for 5 or 6; and P (Poor) for 4, 3, 2, 1, or 0 (B.C.12).\n\nAt the component level, the threshold rating of 4 (POOR) is defined in Table 20 of Section 7.1 as widespread moderate or isolated major defects where the strength and/or performance of the component is affected. B.C.12 gives a worked example: code P is calculated for a steel box girder bridge whose deck condition rating is 4 even though its superstructure is rated 6 and substructure is rated 7 — the single lowest component rating drives the classification.",
+    "citations": [
+      {
+        "section": "B.C.12",
+        "quote": "Code Condition Lowest Condition Rating G Good 7, 8, or 9 F Fair 5 or 6 P Poor 4, 3, 2, 1, or 0"
+      },
+      {
+        "section": "B.C.12",
+        "quote": "the method of assessment to determine the classification of a bridge is the minimum (i.e. lowest) condition rating code from the following items: B.C.01 (Deck Condition Rating), B.C.02 (Superstructure Condition Rating), B.C.03 (Substructure Condition Rating), and B.C.04 (Culvert Condition Rating)."
+      },
+      {
+        "section": "B.C.12",
+        "quote": "Code P is calculated and recorded for a steel box girder bridge with the following component condition rating codes: • B.C.01 (Deck Condition Rating) = 4 • B.C.02 (Superstructure Condition Rating) = 6 • B.C.03 (Substructure Condition Rating) = 7"
+      },
+      {
+        "section": "Section 7.1",
+        "quote": "4 POOR Widespread moderate or isolated major defects; strength and/or performance of the component is affected."
+      }
+    ]
+  }
+}

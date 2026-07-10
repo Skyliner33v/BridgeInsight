@@ -1,0 +1,24 @@
+{
+  "question": "What do the component condition rating codes mean?",
+  "answer": {
+    "answer": "The SNBI rates bridge components using a standard code scale defined in Table 20 of Subsection 7.1 (Component Condition Ratings). Per Section 7.1, Table 20 is used to determine condition rating codes for the bridge component items B.C.01 through B.C.07, and the entire code description must be satisfied for a code to apply.\n\nThe codes are: 9 EXCELLENT (isolated inherent defects), 8 VERY GOOD (some inherent defects), 7 GOOD (some minor defects), 6 SATISFACTORY (widespread minor or isolated moderate defects), 5 FAIR (some moderate defects, with strength and performance of the component not affected), 4 POOR (widespread moderate or isolated major defects, with strength and/or performance of the component affected), 3 SERIOUS (major defects seriously affecting strength and/or performance, typically necessitating more frequent monitoring, load restrictions, and/or corrective actions), 2 CRITICAL (major defects with the component severely compromised), 1 IMMINENT FAILURE (bridge closed to traffic due to component condition, but repair or rehabilitation may return it to service), 0 FAILED (bridge closed and beyond corrective action, requiring replacement), and N NOT APPLICABLE (component does not exist) (Section 7.1).\n\nWhen selecting a code, Section 7.1 directs that a condition rating must consider the type, location, and severity of the defects, the extent to which they exist throughout the item being evaluated, and the degree to which the defects affect the strength and/or performance of the bridge or component.",
+    "citations": [
+      {
+        "section": "Section 7.1",
+        "quote": "Use Table 20 to determine condition rating codes for the bridge component items in this section (Items B.C.01 through B.C.07). The entire code description must be satisfied for the code to apply."
+      },
+      {
+        "section": "Section 7.1",
+        "quote": "9 EXCELLENT Isolated inherent defects. 8 VERY GOOD Some inherent defects. 7 GOOD Some minor defects. 6 SATISFACTORY Widespread minor or isolated moderate defects."
+      },
+      {
+        "section": "Section 7.1",
+        "quote": "4 POOR Widespread moderate or isolated major defects; strength and/or performance of the component is affected."
+      },
+      {
+        "section": "Section 7.1",
+        "quote": "A condition rating code must therefore consider the type, location, and severity of the defects; the extent to which they exist throughout the item being evaluated; and the degree to which the defects affect strength and/or performance of the bridge or component."
+      }
+    ]
+  }
+}

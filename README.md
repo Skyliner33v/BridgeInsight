@@ -28,6 +28,14 @@ A Blazor WebAssembly application that transforms National Bridge Inventory (NBI)
 - Funding prioritization narratives
 - Data quality notes and caveats
 
+### Ask the SNBI Guide
+- Document-grounded Q&A over the FHWA Specifications for the National Bridge Inventory (SNBI, Publication No. FHWA-HIF-22-017)
+- Fully client-side retrieval — lexical scoring ranks spec sections in the browser, no embeddings or server
+- **Mandatory citations** — the AI answers only from retrieved sections, cites the section number for every claim, and declines questions the sections don't cover
+- Transparency panel shows exactly which sections were retrieved and sent to the model
+- Citation chips expand to the verbatim quote and full source excerpt
+- Demo mode with three pre-cached, citation-grounded answers (no API key required)
+
 ### Portfolio Site
 - Professional portfolio showcasing bridge engineering and software development experience
 - Projects, skills, and contact information
@@ -52,6 +60,8 @@ Browser (WASM)
 │   └── SQLite (Emscripten filesystem + Cache API)
 ├── Claude API Client (direct browser access)
 │   └── RAG: FHWA rating definitions in system prompt
+├── Ask the SNBI Guide (document-grounded Q&A)
+│   └── Client-side lexical retrieval over pre-extracted SNBI chunks
 └── Demo Mode (pre-cached JSON responses)
 ```
 
@@ -87,11 +97,21 @@ python preprocess_nbi.py
 ```
 Downloads WA 2024 NBI data from FHWA and outputs `wa-bridges-2024.json`.
 
-## Data Source
+To regenerate the SNBI specification chunks for Ask the SNBI Guide:
+```bash
+cd tools
+pip install --user pypdf
+python preprocess_snbi.py
+```
+Downloads the official SNBI PDF from FHWA and extracts section-level chunks into `snbi-chunks.json`. The generated JSON is committed so the deployed app never fetches FHWA at runtime.
+
+## Data Sources
 
 Bridge data sourced from the [FHWA National Bridge Inventory](https://www.fhwa.dot.gov/bridge/nbi/ascii.cfm) (2024 submission, Washington State). Contains 8,474 bridges with condition ratings, structural data, traffic volumes, and inspection records.
 
 All condition ratings follow the FHWA Recording and Coding Guide for the Structure Inventory and Appraisal of the Nation's Bridges (0-9 scale).
+
+Ask the SNBI Guide is grounded in the [FHWA Specifications for the National Bridge Inventory](https://www.fhwa.dot.gov/bridge/snbi/errata1_to_snbi_march_2022_publication.pdf) (March 2022 with errata #1). The extracted corpus covers the introduction, all 154 data item definitions, section overviews (including the component condition rating code tables), and Appendix C condition rating guidance. The comprehensive example walkthrough and Appendixes A–B (example data sets and indexes) are intentionally excluded, and figures and some multi-column tables are flattened by PDF text extraction — verify answers against the official publication.
 
 ## License
 

@@ -1,0 +1,24 @@
+{
+  "question": "What inspection types does the SNBI define?",
+  "answer": {
+    "answer": "Item B.IE.01 (Inspection Type) defines nine codes for reporting the inspection type or scour monitoring performed: 1 Initial, 2 Routine, 3 Underwater, 4 NSTM, 5 Damage, 6 In-Depth, 7 Special, 8 Service, and 9 Scour Monitoring (B.IE.01).\n\nThe commentary for B.IE.01 clarifies several usages: code 2 (Routine) applies when all portions of a bridge substructure and the surrounding channel have been inspected to the mudline at low water visually, or by wading or probing during routine inspections; code 8 (Service) is used when a Service Inspection is performed for a bridge with a risk-based routine inspection interval that exceeds 48 months; and code 9 (Scour Monitoring) is used when scour monitoring is performed as required by a Scour POA for a triggering storm event (B.IE.01).\n\nThe item's examples illustrate typical reporting: the initial inspection of a widened bridge is reported as 1, a scheduled twelve-month inspection of a bridge in poor condition as 2, an unscheduled inspection to assess damage from a vehicular impact as 5, and a hands-on inspection of pins using non-destructive testing methods as 6 (B.IE.01). If more than one type of inspection is performed on a given inspection date, Section 6.2 requires a separate inspection data set to be reported for each inspection type performed.",
+    "citations": [
+      {
+        "section": "B.IE.01",
+        "quote": "Report the inspection type or scour monitoring performed using one of the following codes. Code Description 1 Initial 2 Routine 3 Underwater 4 NSTM 5 Damage 6 In-Depth 7 Special 8 Service 9 Scour Monitoring"
+      },
+      {
+        "section": "B.IE.01",
+        "quote": "Use code 8 when a Service Inspection is performed for a bridge with a risk-based routine inspection interval that exceeds 48 months."
+      },
+      {
+        "section": "B.IE.01",
+        "quote": "An unscheduled inspection to assess the damage resulting from a vehicular impact. Report 5."
+      },
+      {
+        "section": "Section 6.2",
+        "quote": "If more than one type of inspection is performed on a given inspection date, a separate inspection data set is reported for each inspection type performed."
+      }
+    ]
+  }
+}

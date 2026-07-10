@@ -18,5 +18,6 @@ builder.Services.AddBWEFSDbContextFactory<BridgeDbContext>(useMigrations: false)
 builder.Services.AddScoped<DatabaseService>();
 builder.Services.AddScoped<BridgeDataService>();
 builder.Services.AddScoped<ClaudeAnalysisService>();
+builder.Services.AddScoped<SnbiRetrievalService>();
 
 await builder.Build().RunAsync();
