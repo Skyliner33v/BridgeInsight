@@ -133,6 +133,23 @@ public class SnbiRetrievalService
         return matches[0];
     }
 
+    /// <summary>
+    /// Verifies that a citation's quote appears verbatim in the cited section's
+    /// text, using a whitespace-normalized, case-insensitive substring match —
+    /// the same check the pre-cached demo answers were validated against.
+    /// Returns null when the corpus is not loaded (verification unavailable).
+    /// </summary>
+    public bool? VerifyQuote(string section, string quote)
+    {
+        if (_chunks == null) return null;
+        if (string.IsNullOrWhiteSpace(quote)) return false;
+
+        var chunk = FindBySection(section, quote);
+        if (chunk == null) return false;
+
+        return NormalizeWhitespace(chunk.Text).Contains(NormalizeWhitespace(quote));
+    }
+
     private static string NormalizeWhitespace(string text)
         => Regex.Replace(text, @"\s+", " ").Trim().ToLowerInvariant();
 

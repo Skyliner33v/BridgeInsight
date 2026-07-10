@@ -292,4 +292,80 @@ public class SnbiRetrievalServiceTests
 
         Assert.Null(service.FindBySection("B.ZZ.99"));
     }
+
+    // ── VerifyQuote ─────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task VerifyQuote_ExactSubstring_ReturnsTrue()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        Assert.True(service.VerifyQuote("B.C.01", "Report the condition rating of the bridge deck."));
+    }
+
+    [Fact]
+    public async Task VerifyQuote_WhitespaceAndCaseDifferences_ReturnsTrue()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        Assert.True(service.VerifyQuote("B.C.01", "report the  condition\nrating of THE bridge deck"));
+    }
+
+    [Fact]
+    public async Task VerifyQuote_FabricatedQuote_ReturnsFalse()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        Assert.False(service.VerifyQuote("B.C.01", "The deck shall be replaced every ten years."));
+    }
+
+    [Fact]
+    public async Task VerifyQuote_QuoteFromDifferentSection_ReturnsFalse()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        // The quote is real but belongs to B.C.02, not the cited B.C.01
+        Assert.False(service.VerifyQuote("B.C.01", "The superstructure includes all primary load-carrying members"));
+    }
+
+    [Fact]
+    public async Task VerifyQuote_UnknownSection_ReturnsFalse()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        Assert.False(service.VerifyQuote("B.ZZ.99", "Report the condition rating"));
+    }
+
+    [Fact]
+    public async Task VerifyQuote_EmptyQuote_ReturnsFalse()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        Assert.False(service.VerifyQuote("B.C.01", ""));
+        Assert.False(service.VerifyQuote("B.C.01", "   "));
+    }
+
+    [Fact]
+    public async Task VerifyQuote_MultiChunkSection_MatchesQuoteInLaterChunk()
+    {
+        var service = CreateService();
+        await service.EnsureLoadedAsync();
+
+        // The quote lives in the second Appendix C chunk
+        Assert.True(service.VerifyQuote("Appendix C", "corrosion, fatigue cracking, and section loss"));
+    }
+
+    [Fact]
+    public void VerifyQuote_CorpusNotLoaded_ReturnsNull()
+    {
+        var service = CreateService();
+
+        Assert.Null(service.VerifyQuote("B.C.01", "Report the condition rating"));
+    }
 }

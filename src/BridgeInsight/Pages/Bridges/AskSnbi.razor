@@ -137,15 +137,28 @@
                     {
                         <div class="citations-section">
                             <h4>Citations</h4>
-                            <p class="citations-note">Click a section to see the quoted evidence and the full source excerpt.</p>
+                            <p class="citations-note">Click a section to see the quoted evidence and the full source excerpt. Quotes are checked against the corpus in your browser: <span class="quote-verify quote-verify--ok quote-verify--legend">✓</span> means the quote matches the cited section verbatim.</p>
                             <div class="citation-chips">
                                 @for (var i = 0; i < result.Citations.Count; i++)
                                 {
                                     var index = i;
                                     var citation = result.Citations[index];
+                                    var verified = Retrieval.VerifyQuote(citation.Section, citation.Quote);
                                     <button class="citation-chip @(expandedCitation == index ? "citation-chip--open" : "")"
                                             @onclick="() => ToggleCitation(index)">
                                         <span class="section-badge">@citation.Section</span>
+                                        @if (verified == true)
+                                        {
+                                            <span class="quote-verify quote-verify--ok"
+                                                  title="Quote verified — it matches the text of section @citation.Section in the corpus"
+                                                  aria-label="Quote verified against section @citation.Section">✓</span>
+                                        }
+                                        else if (verified == false)
+                                        {
+                                            <span class="quote-verify quote-verify--warn"
+                                                  title="Quote could not be matched to the text of section @citation.Section — open this citation to compare it against the source excerpt"
+                                                  aria-label="Quote does not match section @citation.Section">!</span>
+                                        }
                                         <span class="citation-chevron">@(expandedCitation == index ? "▾" : "▸")</span>
                                     </button>
                                 }
