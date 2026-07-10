@@ -2,7 +2,7 @@
 
 **Explainable AI for Bridge Data Intelligence**
 
-A Blazor WebAssembly application that transforms National Bridge Inventory (NBI) data into trustworthy, explainable analysis for bridge program managers and civil engineering decision-makers.
+A Blazor WebAssembly application that turns National Bridge Inventory (NBI) data into trustworthy, explainable analysis for bridge program managers and civil engineering decision-makers.
 
 **[Live Demo](https://Skyliner33v.github.io/BridgeInsight/)**
 
@@ -16,7 +16,7 @@ A Blazor WebAssembly application that transforms National Bridge Inventory (NBI)
 
 ### AI-Powered Bridge Analysis
 - Claude API integration generates plain-English condition narratives
-- **Evidence chain traceability** — every AI claim traces to specific NBI data fields and FHWA standards
+- Evidence chain traceability: every AI claim traces to specific NBI data fields and FHWA standards
 - Risk factor identification with severity classification
 - Data gap flagging and recommended actions
 - Demo mode with pre-cached responses (no API key required)
@@ -30,14 +30,14 @@ A Blazor WebAssembly application that transforms National Bridge Inventory (NBI)
 
 ### Ask the SNBI Guide
 - Document-grounded Q&A over the FHWA Specifications for the National Bridge Inventory (SNBI, Publication No. FHWA-HIF-22-017)
-- Fully client-side retrieval — lexical scoring ranks spec sections in the browser, no embeddings or server
-- **Mandatory citations** — the AI answers only from retrieved sections, cites the section number for every claim, and declines questions the sections don't cover
+- Retrieval is fully client-side: lexical scoring ranks spec sections in the browser, with no embeddings or server
+- The AI answers only from the retrieved sections, cites the section number for every claim, and declines questions the sections don't cover
 - Transparency panel shows exactly which sections were retrieved and sent to the model
 - Citation chips expand to the verbatim quote and full source excerpt
 - Demo mode with three pre-cached, citation-grounded answers (no API key required)
 
 ### Portfolio Site
-- Professional portfolio showcasing bridge engineering and software development experience
+- Portfolio pages covering bridge engineering and software development experience
 - Projects, skills, and contact information
 
 ## Tech Stack
@@ -65,11 +65,11 @@ Browser (WASM)
 └── Demo Mode (pre-cached JSON responses)
 ```
 
-**Key architectural decisions:**
-- **Client-side only** — no server required, runs entirely in the browser
-- **Offline-capable** — SQLite database persists via browser Cache API
-- **Explainable AI** — structured JSON output with evidence chains, not black-box summaries
-- **Demo-first** — works without an API key using pre-cached responses
+Key architectural decisions:
+- Client-side only: no server required, everything runs in the browser
+- The SQLite database persists via the browser Cache API, so the app works offline
+- AI output is structured JSON with evidence chains rather than black-box summaries
+- Demo mode means the app works without an API key, using pre-cached responses
 
 ## Getting Started
 
@@ -111,7 +111,7 @@ Bridge data sourced from the [FHWA National Bridge Inventory](https://www.fhwa.d
 
 All condition ratings follow the FHWA Recording and Coding Guide for the Structure Inventory and Appraisal of the Nation's Bridges (0-9 scale).
 
-Ask the SNBI Guide is grounded in the [FHWA Specifications for the National Bridge Inventory](https://www.fhwa.dot.gov/bridge/snbi/errata1_to_snbi_march_2022_publication.pdf) (March 2022 with errata #1). The extracted corpus covers the introduction, all 154 data item definitions, section overviews (including the component condition rating code tables), and Appendix C condition rating guidance. The comprehensive example walkthrough and Appendixes A–B (example data sets and indexes) are intentionally excluded, and figures and some multi-column tables are flattened by PDF text extraction — verify answers against the official publication.
+Ask the SNBI Guide is grounded in the [FHWA Specifications for the National Bridge Inventory](https://www.fhwa.dot.gov/bridge/snbi/errata1_to_snbi_march_2022_publication.pdf) (March 2022 with errata #1). The extracted corpus covers the introduction, all 154 data item definitions, section overviews (including the component condition rating code tables), and Appendix C condition rating guidance. The comprehensive example walkthrough and Appendixes A–B (example data sets and indexes) are intentionally excluded. Figures and some multi-column tables are flattened by PDF text extraction, so verify answers against the official publication.
 
 ## License
 

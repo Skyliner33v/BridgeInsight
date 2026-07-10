@@ -33,7 +33,7 @@
             <div class="intro-text">
                 <p>
                     This prototype explores how <strong>ONNX Runtime Web</strong> can bring machine learning inference
-                    directly into the browser — no server, no API calls, no data leaving the client. A small neural network
+                    directly into the browser, with no server involved and no data leaving the client. A small neural network
                     predicts bridge deterioration risk from NBI features, running entirely in WebAssembly.
                 </p>
                 <p>
@@ -154,7 +154,7 @@
 
                 <p class="card-description">
                     Bridge deck inspections currently rely on manual visual assessment. Computer vision models
-                    like YOLO can automate defect detection — trained to identify cracks, spalling, delamination,
+                    like YOLO can automate defect detection: trained to identify cracks, spalling, delamination,
                     and corrosion from inspection photos, then exported to ONNX for deployment at the edge or in-browser.
                 </p>
 
@@ -180,7 +180,7 @@
                     <div class="arch-step">
                         <div class="arch-icon">⚡</div>
                         <h4>Edge Inference</h4>
-                        <p>ONNX Runtime on tablet, laptop, or browser — no cloud required</p>
+                        <p>ONNX Runtime on tablet, laptop, or browser, no cloud required</p>
                     </div>
                     <div class="arch-arrow">&rarr;</div>
                     <div class="arch-step">
@@ -211,29 +211,29 @@
                                 <td><span class="defect-tag defect-tag--critical">Transverse Crack</span></td>
                                 <td>94.2%</td>
                                 <td>Deck panel 3, midspan</td>
-                                <td class="severity severity--high">CS3 — Moderate</td>
-                                <td>Element 12 — Deck</td>
+                                <td class="severity severity--high">CS3 - Moderate</td>
+                                <td>Element 12 - Deck</td>
                             </tr>
                             <tr>
                                 <td><span class="defect-tag defect-tag--warning">Spalling</span></td>
                                 <td>87.6%</td>
                                 <td>Deck panel 1, near joint</td>
-                                <td class="severity severity--high">CS3 — Moderate</td>
-                                <td>Element 12 — Deck</td>
+                                <td class="severity severity--high">CS3 - Moderate</td>
+                                <td>Element 12 - Deck</td>
                             </tr>
                             <tr>
                                 <td><span class="defect-tag defect-tag--info">Efflorescence</span></td>
                                 <td>91.1%</td>
                                 <td>Underside, bent 2</td>
-                                <td class="severity severity--low">CS2 — Fair</td>
-                                <td>Element 215 — Soffit</td>
+                                <td class="severity severity--low">CS2 - Fair</td>
+                                <td>Element 215 - Soffit</td>
                             </tr>
                             <tr>
                                 <td><span class="defect-tag defect-tag--warning">Delamination</span></td>
                                 <td>78.3%</td>
                                 <td>Deck panel 2, wheel path</td>
-                                <td class="severity severity--critical">CS4 — Severe</td>
-                                <td>Element 12 — Deck</td>
+                                <td class="severity severity--critical">CS4 - Severe</td>
+                                <td>Element 12 - Deck</td>
                             </tr>
                         </tbody>
                     </table>
@@ -259,7 +259,7 @@
                     <div class="decision">
                         <h4>Why YOLO for Bridge Inspection?</h4>
                         <p>
-                            YOLOv8 excels at real-time object detection — processing full inspection images in
+                            YOLOv8 excels at real-time object detection, processing full inspection images in
                             milliseconds. For bridge deck condition surveys, a fine-tuned YOLO model can detect
                             cracks, spalling, delamination, and corrosion staining simultaneously, outputting
                             bounding boxes with confidence scores that map directly to AASHTO element-level
@@ -271,7 +271,7 @@
                         <p>
                             The training pipeline uses Python's ML ecosystem: pandas for NBI data preprocessing,
                             scikit-learn or PyTorch for model training, and skl2onnx/torch.onnx for ONNX export.
-                            Historical inspection data (condition ratings over time) provides training labels —
+                            Historical inspection data (condition ratings over time) provides training labels:
                             bridges whose ratings dropped between inspection cycles are positive deterioration examples.
                             Cross-validation ensures the model generalizes across different bridge types and regions.
                         </p>
@@ -301,8 +301,8 @@
                     <div class="decision">
                         <h4>Edge Deployment for Field Inspectors</h4>
                         <p>
-                            Bridge inspectors often work in areas with limited connectivity — under bridges, in
-                            remote counties, or inside box girders. ONNX Runtime's cross-platform support enables
+                            Bridge inspectors often work where connectivity is limited (under bridges, in
+                            remote counties, or inside box girders). ONNX Runtime's cross-platform support enables
                             offline inference on field tablets running .NET MAUI or progressive web apps. The
                             same model that runs in this browser prototype could power real-time condition assessment
                             during inspections, with results syncing to BrM when connectivity returns.

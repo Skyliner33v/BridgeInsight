@@ -18,14 +18,14 @@
         {
             <div class="mode-indicator mode-indicator--live">
                 <span class="mode-badge mode-badge--live">Live</span>
-                <span>Claude API connected — ask any question about the SNBI specification</span>
+                <span>Claude API connected. Ask any question about the SNBI specification.</span>
             </div>
         }
         else
         {
             <div class="mode-indicator mode-indicator--demo">
                 <span class="mode-badge mode-badge--demo">Demo</span>
-                <span>Pre-cached answers for the sample questions below — <a href="/bridgeinsight">add your API key</a> to ask anything</span>
+                <span>Pre-cached answers for the sample questions below. <a href="/bridgeinsight">Add your API key</a> to ask anything.</span>
             </div>
         }
 
@@ -33,8 +33,8 @@
         <div class="card ask-card">
             <h3>Ask a Question</h3>
             <p class="ask-description">
-                Every answer is grounded exclusively in the SNBI specification text retrieved below —
-                each claim cites the section it came from, and questions the retrieved sections
+                Every answer is grounded exclusively in the SNBI specification text retrieved below.
+                Each claim cites the section it came from, and questions the retrieved sections
                 cannot answer are declined rather than guessed.
             </p>
             <div class="ask-form">
@@ -70,7 +70,7 @@
             <div class="card transparency-card">
                 <div class="transparency-header">
                     <h3>Retrieved Sections</h3>
-                    <span class="transparency-note">Ranked in your browser by lexical scoring — these excerpts are the only material the AI sees</span>
+                    <span class="transparency-note">Ranked in your browser by lexical scoring. These excerpts are the only material the AI sees.</span>
                 </div>
                 <div class="hit-list">
                     @foreach (var hit in hits)
@@ -181,11 +181,11 @@
             <p>
                 The knowledge base is the official FHWA <em>Specifications for the National Bridge Inventory</em>
                 (Publication No. FHWA-HIF-22-017, March 2022 with errata #1), extracted into
-                @(Retrieval.IsLoaded ? Retrieval.ChunkCount.ToString() : "200+") section-level chunks at build time —
+                @(Retrieval.IsLoaded ? Retrieval.ChunkCount.ToString() : "200+") section-level chunks at build time:
                 the introduction, all 154 data item definitions (B.ID.01 through B.W.03), section overviews
                 including the component condition rating code tables, and Appendix C condition rating guidance.
                 The comprehensive example bridge walkthrough and Appendixes A&ndash;B (example data sets and indexes)
-                are not included, and figures and some multi-column tables are flattened by PDF text extraction —
+                are not included, and figures and some multi-column tables are flattened by PDF text extraction, so
                 always verify against the <a href="https://www.fhwa.dot.gov/bridge/snbi/errata1_to_snbi_march_2022_publication.pdf"
                 target="_blank" rel="noopener">official publication</a> before relying on an answer.
                 The deployed app never contacts FHWA at runtime.

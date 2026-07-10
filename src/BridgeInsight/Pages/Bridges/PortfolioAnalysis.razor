@@ -28,14 +28,14 @@
             {
                 <div class="mode-indicator mode-indicator--live">
                     <span class="mode-badge mode-badge--live">Live</span>
-                    <span>Claude API connected — analyses will use real-time AI</span>
+                    <span>Claude API connected. Analyses will use real-time AI.</span>
                 </div>
             }
             else
             {
                 <div class="mode-indicator mode-indicator--demo">
                     <span class="mode-badge mode-badge--demo">Demo</span>
-                    <span>Using pre-cached responses — <a href="/bridgeinsight">add your API key</a> for live analysis</span>
+                    <span>Using pre-cached responses. <a href="/bridgeinsight">Add your API key</a> for live analysis.</span>
                 </div>
             }
 
@@ -76,7 +76,7 @@
                         <p><strong>@selectedBridges.Count</strong> bridges selected
                             @if (selectedBridges.Count > 20)
                             {
-                                <span class="selection-warning">(max 20 for briefing — first 20 will be used)</span>
+                                <span class="selection-warning">(max 20 for briefing; the first 20 will be used)</span>
                             }
                         </p>
                         <button class="btn btn-accent" @onclick="GenerateBriefing" disabled="@isGenerating">
@@ -95,12 +95,12 @@
                         <p>
                             Traditional bridge risk assessments require engineers to manually cross-reference
                             condition ratings, scour codes, traffic data, and federal standards across dozens of structures.
-                            This tool automates that analysis — select a portfolio of bridges and receive a
+                            This tool automates that analysis: select a portfolio of bridges and receive a
                             decision-ready briefing in under 60 seconds.
                         </p>
                         <p>
                             Every finding traces back to specific NBI data fields and FHWA coding standards.
-                            No black-box conclusions — just <strong>explainable AI</strong> grounded in the same
+                            There are no black-box conclusions, just explainable AI grounded in the same
                             references bridge engineers use daily.
                         </p>
                     </div>
@@ -113,7 +113,7 @@
                             <div class="step-number">1</div>
                             <div class="step-icon">🗂️</div>
                             <h4>Select Portfolio</h4>
-                            <p>Choose bridges by deficiency status, worst condition, or county — sourced from 8,400+ WA state structures in the NBI dataset</p>
+                            <p>Choose bridges by deficiency status, worst condition, or county, sourced from 8,400+ WA state structures in the NBI dataset</p>
                         </div>
                         <div class="pipeline-connector"></div>
                         <div class="pipeline-step">
@@ -127,14 +127,14 @@
                             <div class="step-number">3</div>
                             <div class="step-icon">🧠</div>
                             <h4>AI Analysis</h4>
-                            <p>Claude analyzes the portfolio using FHWA reference data as RAG context — classifying risk tiers and identifying cross-portfolio patterns</p>
+                            <p>Claude analyzes the portfolio using FHWA reference data as RAG context, classifying risk tiers and identifying cross-portfolio patterns</p>
                         </div>
                         <div class="pipeline-connector"></div>
                         <div class="pipeline-step">
                             <div class="step-number">4</div>
                             <div class="step-icon">📋</div>
                             <h4>Traceable Briefing</h4>
-                            <p>Executive summary, per-bridge evidence blocks, funding narrative, and data quality notes — every claim linked to source data</p>
+                            <p>Executive summary, per-bridge evidence blocks, funding narrative, and data quality notes, with every claim linked to source data</p>
                         </div>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                     <div class="capability-card">
                         <div class="capability-icon">📊</div>
                         <h4>Evidence-Based Assessment</h4>
-                        <p>Per-bridge evidence blocks with condition ratings, risk factors, and one-sentence assessments — no unsupported conclusions</p>
+                        <p>Per-bridge evidence blocks with condition ratings, risk factors, and one-sentence assessments. No unsupported conclusions.</p>
                     </div>
                     <div class="capability-card">
                         <div class="capability-icon">💰</div>
@@ -158,7 +158,7 @@
                     <div class="capability-card">
                         <div class="capability-icon">🔗</div>
                         <h4>Full Traceability</h4>
-                        <p>Every finding references specific NBI fields and FHWA coding standards — decision-makers can verify any claim against the source data</p>
+                        <p>Every finding references specific NBI fields and FHWA coding standards, so decision-makers can verify any claim against the source data</p>
                     </div>
                 </div>
 
@@ -166,14 +166,14 @@
                     <div class="callout-content">
                         <div class="callout-icon">💡</div>
                         <div>
-                            <strong>Try it now</strong> — Select a bridge portfolio above and click "Generate Portfolio Briefing."
+                            <strong>Try it now:</strong> select a bridge portfolio above and click "Generate Portfolio Briefing."
                             @if (!hasApiKey)
                             {
                                 <span>A pre-cached demo response is available instantly, or <a href="/bridgeinsight">add your Claude API key</a> on the BridgeInsight hub for live analysis of any portfolio.</span>
                             }
                             else
                             {
-                                <span>Your API key is active — analyses will use the Claude API for real-time results.</span>
+                                <span>Your API key is active, so analyses will use the Claude API for real-time results.</span>
                             }
                         </div>
                     </div>

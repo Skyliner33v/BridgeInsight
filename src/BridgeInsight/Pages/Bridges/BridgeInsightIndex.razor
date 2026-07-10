@@ -40,7 +40,7 @@
 
             <div class="browser-notice">
                 <span class="browser-notice-icon">&#9432;</span>
-                <p>BridgeInsight runs entirely in your browser — SQLite database, AI inference, and all data processing happen client-side via WebAssembly. First loads may take a moment while the runtime initializes.</p>
+                <p>BridgeInsight runs entirely in your browser. The SQLite database, AI inference, and all data processing happen client-side via WebAssembly. First loads may take a moment while the runtime initializes.</p>
             </div>
 
             <!-- API Key / Analysis Mode Section -->
@@ -66,7 +66,7 @@
                         <div class="api-option @(showApiKeyInput ? "api-option--selected" : "")" @onclick="() => showApiKeyInput = true">
                             <div class="api-option-icon">🔑</div>
                             <h5>Use Your API Key</h5>
-                            <p>Unlock live AI analysis for any bridge or portfolio. Calls the Claude API directly from your browser.</p>
+                            <p>Run live AI analysis for any bridge or portfolio. Calls the Claude API directly from your browser.</p>
                             @if (showApiKeyInput)
                             {
                                 <div class="api-key-form" @onclick:stopPropagation="true">
@@ -82,7 +82,7 @@
                         <div class="api-option" @onclick="() => showApiKeyInput = false">
                             <div class="api-option-icon">📦</div>
                             <h5>Demo Mode</h5>
-                            <p>Explore with pre-cached AI responses for select bridges and portfolios. No API key needed — works instantly.</p>
+                            <p>Explore with pre-cached AI responses for select bridges and portfolios. No API key needed, and it works instantly.</p>
                             <span class="mode-badge mode-badge--demo">Active by Default</span>
                         </div>
                     </div>
@@ -102,13 +102,13 @@
                 </a>
                 <a href="bridgeinsight/ask-snbi" class="app-nav-card">
                     <h3>Ask the SNBI Guide</h3>
-                    <p>Document-grounded Q&amp;A over the FHWA SNBI specification. Every claim cites the section it came from — with the retrieved excerpts shown in full.</p>
+                    <p>Document-grounded Q&amp;A over the FHWA SNBI specification. Every claim cites the section it came from, with the retrieved excerpts shown in full.</p>
                     <span class="app-nav-link">Open SNBI Guide &rarr;</span>
                 </a>
                 <a href="bridgeinsight/condition-ai" class="app-nav-card app-nav-card--prototype">
                     <span class="prototype-ribbon">Exploratory Prototype</span>
                     <h3>Condition AI</h3>
-                    <p>In-browser ML inference using ONNX Runtime Web. Predicts bridge deterioration risk from NBI features — no server required.</p>
+                    <p>In-browser ML inference using ONNX Runtime Web. Predicts bridge deterioration risk from NBI features, no server required.</p>
                     <span class="app-nav-link">Open Condition AI &rarr;</span>
                 </a>
             </div>
@@ -117,8 +117,8 @@
                 <h4>Why BridgeInsight?</h4>
                 <p>
                     Built by a 20-year WSDOT bridge data specialist with extensive daily AASHTOWare BrM experience,
-                    BridgeInsight explores how explainable AI can augment bridge management workflows —
-                    turning raw NBI data into trustworthy, evidence-traced narratives that engineers
+                    BridgeInsight explores how explainable AI can augment bridge management workflows
+                    by turning raw NBI data into trustworthy, evidence-traced narratives that engineers
                     can verify against the source data.
                 </p>
             </div>
