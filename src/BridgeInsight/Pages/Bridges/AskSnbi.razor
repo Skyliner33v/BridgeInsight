@@ -29,6 +29,14 @@
             </div>
         }
 
+        @if (corpusLoadError != null)
+        {
+            <div class="mode-indicator mode-indicator--warn">
+                <span class="mode-badge mode-badge--warn">Warning</span>
+                <span>@corpusLoadError</span>
+            </div>
+        }
+
         <!-- Question Input -->
         <div class="card ask-card">
             <h3>Ask a Question</h3>
@@ -211,10 +219,20 @@
     private int? expandedCitation;
     private bool hasApiKey;
     private bool hasCheckedKey;
+    private string? corpusLoadError;
 
     protected override async Task OnInitializedAsync()
     {
-        await Retrieval.EnsureLoadedAsync();
+        try
+        {
+            await Retrieval.EnsureLoadedAsync();
+        }
+        catch
+        {
+            // The page still works without the index (demo answers don't need
+            // retrieval), and asking retries the download — degrade with a warning
+            corpusLoadError = "Could not load the SNBI corpus — retrieval is unavailable. Check your connection; asking a question will retry.";
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -240,7 +258,13 @@
 
     private async Task Ask()
     {
-        if (string.IsNullOrWhiteSpace(question) || isAsking) return;
+        if (isAsking) return;
+
+        // The Enter key that submits also inserts a newline into the textarea
+        // (keydown default isn't prevented) — normalize before using the question
+        question = question.TrimEnd('\n', '\r');
+        var asked = question.Trim();
+        if (string.IsNullOrWhiteSpace(asked)) return;
 
         isAsking = true;
         result = null;
@@ -250,20 +274,33 @@
         loadingMessage = "Retrieving relevant SNBI sections in your browser...";
         StateHasChanged();
 
-        hits = await Retrieval.RetrieveAsync(question, topK: 5);
+        try
+        {
+            hits = await Retrieval.RetrieveAsync(asked, topK: 5);
+            corpusLoadError = null;
 
-        loadingMessage = hasApiKey
-            ? "Generating grounded answer from the retrieved sections..."
-            : "Loading pre-cached demo answer...";
-        StateHasChanged();
+            loadingMessage = hasApiKey
+                ? "Generating grounded answer from the retrieved sections..."
+                : "Loading pre-cached demo answer...";
+            StateHasChanged();
 
-        result = await AnalysisService.AskSnbiAsync(question, hits.Select(h => h.Chunk).ToList());
-
-        isAsking = false;
+            result = await AnalysisService.AskSnbiAsync(asked, hits.Select(h => h.Chunk).ToList());
+        }
+        catch (Exception ex)
+        {
+            result = new SnbiAnswerResult { Error = $"Error: {ex.Message}", GeneratedAt = DateTime.UtcNow };
+        }
+        finally
+        {
+            isAsking = false;
+            question = question.TrimEnd('\n', '\r');
+        }
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
+        // Note: KeyboardEventArgs on net8.0 has no IsComposing, so Enter during
+        // IME composition cannot be distinguished without JS interop
         if (e.Key == "Enter" && !e.ShiftKey)
         {
             await Ask();
