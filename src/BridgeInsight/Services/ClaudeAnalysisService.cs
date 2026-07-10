@@ -56,9 +56,9 @@ public class ClaudeAnalysisService
 
             var body = new
             {
-                model = "claude-sonnet-4-20250514",
+                model = "claude-sonnet-5",
                 max_tokens = 4096,
-                temperature = 0.3,
+                thinking = new { type = "disabled" },
                 system = systemPrompt,
                 messages = new[] { new { role = "user", content = userPrompt } }
             };
@@ -108,9 +108,9 @@ public class ClaudeAnalysisService
 
             var body = new
             {
-                model = "claude-sonnet-4-20250514",
+                model = "claude-sonnet-5",
                 max_tokens = 8192,
-                temperature = 0.3,
+                thinking = new { type = "disabled" },
                 system = systemPrompt,
                 messages = new[] { new { role = "user", content = userPrompt } }
             };
@@ -301,6 +301,28 @@ Provide a comprehensive briefing following the JSON format specified.";
         return $"{rating} — {FhwaRatings.GetRatingLabel(rating)}";
     }
 
+    /// <summary>
+    /// Extracts the text from the first content block of type "text" in a Messages API
+    /// response. Robust to non-text blocks (e.g. thinking) appearing before the text block.
+    /// </summary>
+    private static string? ExtractTextContent(JsonElement root)
+    {
+        if (!root.TryGetProperty("content", out var content) || content.ValueKind != JsonValueKind.Array)
+            return null;
+
+        foreach (var block in content.EnumerateArray())
+        {
+            if (block.TryGetProperty("type", out var type) &&
+                type.GetString() == "text" &&
+                block.TryGetProperty("text", out var text))
+            {
+                return text.GetString();
+            }
+        }
+
+        return null;
+    }
+
     private BridgeAnalysis ParseAnalysisResponse(string responseJson)
     {
         try
@@ -308,8 +330,8 @@ Provide a comprehensive briefing following the JSON format specified.";
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
 
-            // Extract text content from Claude's response
-            var content = root.GetProperty("content")[0].GetProperty("text").GetString();
+            // Extract text content from Claude's response (first block where type == "text")
+            var content = ExtractTextContent(root);
             if (string.IsNullOrEmpty(content))
                 return new BridgeAnalysis { Error = "Empty response from API" };
 
@@ -343,7 +365,7 @@ Provide a comprehensive briefing following the JSON format specified.";
         {
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
-            var content = root.GetProperty("content")[0].GetProperty("text").GetString();
+            var content = ExtractTextContent(root);
 
             if (string.IsNullOrEmpty(content))
                 return new PortfolioBriefingResult { Error = "Empty response from API" };

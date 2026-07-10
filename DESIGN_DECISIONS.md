@@ -43,7 +43,7 @@ The preprocessed JSON file is ~7 MB for 8,474 bridges. I chose to include all Wa
 - SQLite handles the full dataset without performance issues
 
 ### AI Model Selection
-Claude Sonnet 4 was chosen over Opus for the right balance of quality, speed, and cost. The analysis tasks are well-defined with structured output requirements — they don't require the additional reasoning depth of Opus. Temperature of 0.3 provides consistent, conservative output appropriate for infrastructure assessment.
+Claude Sonnet 5 was chosen over Opus for the right balance of quality, speed, and cost. The analysis tasks are well-defined with structured output requirements — they don't require the additional reasoning depth of Opus. Requests explicitly disable extended thinking to keep responses fast, predictable, and token-efficient for structured JSON output appropriate to infrastructure assessment.
 
 ### Demo Mode Design
 Pre-cached demo responses serve two purposes:

@@ -39,7 +39,7 @@ A Blazor WebAssembly application that transforms National Bridge Inventory (NBI)
 | Frontend | Blazor WebAssembly (.NET 8) |
 | Database | SQLite via EF Core (in-browser) |
 | Browser SQLite | BlazorWASMEntityFrameworkSQLite |
-| AI | Claude API (Sonnet) with RAG context |
+| AI | Claude API (Sonnet 5) with RAG context |
 | Deployment | GitHub Pages via GitHub Actions |
 | Data | FHWA National Bridge Inventory (2024) |
 
