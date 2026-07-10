@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using BridgeInsight.Models;
 using BridgeInsight.Reference;
 using Microsoft.JSInterop;
@@ -26,7 +27,18 @@ public class ClaudeAnalysisService
     }
 
     public async Task<string?> GetApiKeyAsync()
-        => await _js.InvokeAsync<string?>("localStorage.getItem", "bridgeinsight_api_key");
+    {
+        try
+        {
+            return await _js.InvokeAsync<string?>("localStorage.getItem", "bridgeinsight_api_key");
+        }
+        catch
+        {
+            // localStorage can be blocked (sandboxed iframe, strict privacy
+            // settings) — treat it as "no key" so the app falls back to demo mode
+            return null;
+        }
+    }
 
     public async Task SetApiKeyAsync(string key)
         => await _js.InvokeVoidAsync("localStorage.setItem", "bridgeinsight_api_key", key);
@@ -392,6 +404,53 @@ Answer the question following the JSON format specified, grounded only in the se
         return $"{rating} — {FhwaRatings.GetRatingLabel(rating)}";
     }
 
+    // Matches a fenced JSON object anywhere in the text, tolerating a missing
+    // newline after the opening fence and prose before/after the fences
+    private static readonly Regex FencedJsonRegex =
+        new(@"```(?:json)?\s*(\{.*\})\s*```", RegexOptions.Singleline | RegexOptions.Compiled);
+
+    /// <summary>
+    /// Returns a user-facing error when the Messages API response ended abnormally
+    /// (truncated at max_tokens, or refused by the model), otherwise null.
+    /// </summary>
+    private static string? GetStopReasonError(JsonElement root)
+    {
+        if (!root.TryGetProperty("stop_reason", out var stopReason) ||
+            stopReason.ValueKind != JsonValueKind.String)
+        {
+            return null;
+        }
+
+        return stopReason.GetString() switch
+        {
+            "max_tokens" => "The response was cut off before completing (max_tokens reached). Try again, or reduce the input size.",
+            "refusal" => "The model declined to generate a response for this request.",
+            _ => null
+        };
+    }
+
+    /// <summary>
+    /// Extracts the JSON object payload from a model text response, tolerating
+    /// markdown code fences and leading/trailing prose. Returns null when the
+    /// text contains no JSON object.
+    /// </summary>
+    private static string? ExtractJsonPayload(string content)
+    {
+        var fenced = FencedJsonRegex.Match(content);
+        if (fenced.Success)
+            return fenced.Groups[1].Value;
+
+        var start = content.IndexOf('{');
+        var end = content.LastIndexOf('}');
+        if (start >= 0 && end > start)
+            return content.Substring(start, end - start + 1);
+
+        return null;
+    }
+
+    private static string Truncate(string text, int maxLength)
+        => text.Length <= maxLength ? text : text[..maxLength] + "…";
+
     /// <summary>
     /// Extracts the text from the first content block of type "text" in a Messages API
     /// response. Robust to non-text blocks (e.g. thinking) appearing before the text block.
@@ -421,23 +480,24 @@ Answer the question following the JSON format specified, grounded only in the se
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
 
+            var stopError = GetStopReasonError(root);
+            if (stopError != null)
+                return new BridgeAnalysis { Error = stopError, GeneratedAt = DateTime.UtcNow };
+
             // Extract text content from Claude's response (first block where type == "text")
             var content = ExtractTextContent(root);
             if (string.IsNullOrEmpty(content))
                 return new BridgeAnalysis { Error = "Empty response from API" };
 
-            // Clean any markdown code fences
-            content = content.Trim();
-            if (content.StartsWith("```"))
-            {
-                var firstNewline = content.IndexOf('\n');
-                content = content.Substring(firstNewline + 1);
-                if (content.EndsWith("```"))
-                    content = content.Substring(0, content.Length - 3);
-                content = content.Trim();
-            }
+            var json = ExtractJsonPayload(content.Trim());
+            if (json == null)
+                return new BridgeAnalysis
+                {
+                    Error = $"The model returned an unexpected response: {Truncate(content.Trim(), 300)}",
+                    GeneratedAt = DateTime.UtcNow
+                };
 
-            var analysis = JsonSerializer.Deserialize<BridgeAnalysis>(content, JsonOptions);
+            var analysis = JsonSerializer.Deserialize<BridgeAnalysis>(json, JsonOptions);
             if (analysis == null)
                 return new BridgeAnalysis { Error = "Failed to parse analysis response" };
 
@@ -456,22 +516,24 @@ Answer the question following the JSON format specified, grounded only in the se
         {
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
-            var content = ExtractTextContent(root);
 
+            var stopError = GetStopReasonError(root);
+            if (stopError != null)
+                return new PortfolioBriefingResult { Error = stopError, GeneratedAt = DateTime.UtcNow };
+
+            var content = ExtractTextContent(root);
             if (string.IsNullOrEmpty(content))
                 return new PortfolioBriefingResult { Error = "Empty response from API" };
 
-            content = content.Trim();
-            if (content.StartsWith("```"))
-            {
-                var firstNewline = content.IndexOf('\n');
-                content = content.Substring(firstNewline + 1);
-                if (content.EndsWith("```"))
-                    content = content.Substring(0, content.Length - 3);
-                content = content.Trim();
-            }
+            var json = ExtractJsonPayload(content.Trim());
+            if (json == null)
+                return new PortfolioBriefingResult
+                {
+                    Error = $"The model returned an unexpected response: {Truncate(content.Trim(), 300)}",
+                    GeneratedAt = DateTime.UtcNow
+                };
 
-            var briefing = JsonSerializer.Deserialize<PortfolioBriefingResult>(content, JsonOptions);
+            var briefing = JsonSerializer.Deserialize<PortfolioBriefingResult>(json, JsonOptions);
             if (briefing == null)
                 return new PortfolioBriefingResult { Error = "Failed to parse briefing response" };
 
@@ -490,25 +552,31 @@ Answer the question following the JSON format specified, grounded only in the se
         {
             using var doc = JsonDocument.Parse(responseJson);
             var root = doc.RootElement;
-            var content = ExtractTextContent(root);
 
+            var stopError = GetStopReasonError(root);
+            if (stopError != null)
+                return new SnbiAnswerResult { Error = stopError, GeneratedAt = DateTime.UtcNow };
+
+            var content = ExtractTextContent(root);
             if (string.IsNullOrEmpty(content))
                 return new SnbiAnswerResult { Error = "Empty response from API" };
 
-            content = content.Trim();
-            if (content.StartsWith("```"))
-            {
-                var firstNewline = content.IndexOf('\n');
-                content = content.Substring(firstNewline + 1);
-                if (content.EndsWith("```"))
-                    content = content.Substring(0, content.Length - 3);
-                content = content.Trim();
-            }
+            var json = ExtractJsonPayload(content.Trim());
+            if (json == null)
+                return new SnbiAnswerResult
+                {
+                    Error = $"The model returned an unexpected response: {Truncate(content.Trim(), 300)}",
+                    GeneratedAt = DateTime.UtcNow
+                };
 
-            var answer = JsonSerializer.Deserialize<SnbiAnswerResult>(content, JsonOptions);
+            var answer = JsonSerializer.Deserialize<SnbiAnswerResult>(json, JsonOptions);
             if (answer == null)
                 return new SnbiAnswerResult { Error = "Failed to parse answer response" };
 
+            // The model can emit explicit nulls despite the prompt's schema —
+            // normalize so the UI never renders against null members
+            answer.Answer ??= "";
+            answer.Citations ??= new List<SnbiCitation>();
             answer.GeneratedAt = DateTime.UtcNow;
             return answer;
         }
