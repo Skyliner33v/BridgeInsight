@@ -1,0 +1,35 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install wasm-tools workload
+        run: dotnet workload install wasm-tools-net8
+
+      - name: Restore
+        run: dotnet restore BridgeInsight.sln
+
+      - name: Build
+        run: dotnet build BridgeInsight.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test BridgeInsight.sln -c Release --no-build --verbosity normal

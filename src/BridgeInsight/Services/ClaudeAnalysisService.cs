@@ -432,9 +432,9 @@ Answer the question following the JSON format specified, grounded only in the se
     /// <summary>
     /// Extracts the JSON object payload from a model text response, tolerating
     /// markdown code fences and leading/trailing prose. Returns null when the
-    /// text contains no JSON object.
+    /// text contains no JSON object. Internal for unit testing.
     /// </summary>
-    private static string? ExtractJsonPayload(string content)
+    internal static string? ExtractJsonPayload(string content)
     {
         var fenced = FencedJsonRegex.Match(content);
         if (fenced.Success)
@@ -546,7 +546,8 @@ Answer the question following the JSON format specified, grounded only in the se
         }
     }
 
-    private SnbiAnswerResult ParseSnbiResponse(string responseJson)
+    // Static (uses no instance state) and internal for unit testing
+    internal static SnbiAnswerResult ParseSnbiResponse(string responseJson)
     {
         try
         {

@@ -193,7 +193,8 @@ public class SnbiRetrievalService
         return score;
     }
 
-    private static List<string> Tokenize(string text)
+    // Internal for unit testing (see InternalsVisibleTo in BridgeInsight.csproj)
+    internal static List<string> Tokenize(string text)
     {
         var lower = text.ToLowerInvariant();
         // Preserve item identifiers like "B.C.01" as single tokens ("b_c_01"),

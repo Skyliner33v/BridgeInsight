@@ -18,4 +18,8 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="BridgeInsight.Tests" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,7 @@
 # BridgeInsight
 
+[![Build & Test](https://github.com/Skyliner33v/BridgeInsight/actions/workflows/build-test.yml/badge.svg)](https://github.com/Skyliner33v/BridgeInsight/actions/workflows/build-test.yml)
+
 **Explainable AI for Bridge Data Intelligence**
 
 A Blazor WebAssembly application that turns National Bridge Inventory (NBI) data into trustworthy, explainable analysis for bridge program managers and civil engineering decision-makers.
@@ -82,6 +84,12 @@ Key architectural decisions:
 dotnet run --project src/BridgeInsight
 ```
 Navigate to `https://localhost:5001` (or the port shown in console output).
+
+### Run Tests
+```bash
+dotnet test
+```
+Unit tests cover the client-side SNBI retrieval (tokenization and lexical ranking), the Claude response JSON extraction, and the FHWA rating reference tables. The same suite runs in CI on every push and pull request.
 
 ### Using AI Analysis
 1. Navigate to any bridge detail page
