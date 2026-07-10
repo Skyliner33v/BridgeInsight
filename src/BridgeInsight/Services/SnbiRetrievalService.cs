@@ -20,6 +20,7 @@ public class SnbiRetrievalService
     private List<int>? _chunkLengths;
     private Dictionary<string, int>? _documentFrequencies;
     private double _averageChunkLength;
+    private Task? _loadTask;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -37,8 +38,15 @@ public class SnbiRetrievalService
         "where", "which", "who", "why", "will", "with", "would"
     };
 
-    // Matches SNBI item identifiers (e.g. "B.C.01") so they survive tokenization
-    private static readonly Regex ItemIdRegex = new(@"\bb\.([a-z]{1,3})\.(\d{2})\b", RegexOptions.Compiled);
+    // Matches SNBI item identifiers so they survive tokenization as a canonical
+    // zero-padded token (e.g. "b_c_01"). Accepts dots or spaces as separators
+    // and a missing leading zero ("B.C.01", "B.C.1", "B C 01").
+    private static readonly Regex ItemIdRegex = new(@"\bb[. ]([a-z]{1,3})[. ]0?(\d{1,2})\b", RegexOptions.Compiled);
+    // Compact item-identifier form with no separators (e.g. "BC01" -> "b_c_01")
+    private static readonly Regex CompactItemIdRegex = new(@"\bb([a-z]{1,3})(\d{2})\b", RegexOptions.Compiled);
+    // Joins dotted section numbers (e.g. "7.1" in "Section 7.1") into single
+    // tokens ("7_1") so they survive tokenization, analogous to ItemIdRegex
+    private static readonly Regex SectionNumberRegex = new(@"\b(\d+)\.(\d+)\b", RegexOptions.Compiled);
     private static readonly Regex NonTokenRegex = new(@"[^a-z0-9_]+", RegexOptions.Compiled);
 
     public SnbiRetrievalService(HttpClient http)
@@ -49,13 +57,22 @@ public class SnbiRetrievalService
     public bool IsLoaded => _chunks != null;
     public int ChunkCount => _chunks?.Count ?? 0;
 
-    public async Task EnsureLoadedAsync()
-    {
-        if (_chunks != null) return;
+    public Task EnsureLoadedAsync() => _loadTask ??= LoadAsync();
 
-        var chunks = await _http.GetFromJsonAsync<List<SnbiChunk>>("data/snbi-chunks.json", JsonOptions)
-                     ?? new List<SnbiChunk>();
-        BuildIndex(chunks);
+    private async Task LoadAsync()
+    {
+        try
+        {
+            var chunks = await _http.GetFromJsonAsync<List<SnbiChunk>>("data/snbi-chunks.json", JsonOptions)
+                         ?? new List<SnbiChunk>();
+            BuildIndex(chunks);
+        }
+        catch
+        {
+            // Reset so a later call (e.g. the next Ask) can retry the download
+            _loadTask = null;
+            throw;
+        }
     }
 
     /// <summary>Returns the top-K chunks for a query, ranked by lexical score.</summary>
@@ -179,11 +196,17 @@ public class SnbiRetrievalService
     private static List<string> Tokenize(string text)
     {
         var lower = text.ToLowerInvariant();
-        // Preserve item identifiers like "B.C.01" as single tokens ("b_c_01")
-        lower = ItemIdRegex.Replace(lower, "b_$1_$2");
+        // Preserve item identifiers like "B.C.01" as single tokens ("b_c_01"),
+        // normalizing near-miss forms ("B.C.1", "B C 01", "BC01") to the same token
+        lower = ItemIdRegex.Replace(lower, m => $"b_{m.Groups[1].Value}_{int.Parse(m.Groups[2].Value):D2}");
+        lower = CompactItemIdRegex.Replace(lower, "b_$1_$2");
+        // Preserve section numbers like "7.1" as single tokens ("7_1")
+        lower = SectionNumberRegex.Replace(lower, "$1_$2");
 
+        // Keep single-character digit tokens (e.g. condition rating codes like "4");
+        // drop other single characters and stop words
         return NonTokenRegex.Split(lower)
-            .Where(t => t.Length >= 2 && !StopWords.Contains(t))
+            .Where(t => (t.Length >= 2 || (t.Length == 1 && char.IsDigit(t[0]))) && !StopWords.Contains(t))
             .ToList();
     }
 }
