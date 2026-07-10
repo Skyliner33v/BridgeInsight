@@ -148,19 +148,33 @@ def split_words(text, max_words):
             parts.append("\n".join(current))
             current = []
             count = 0
-        # A single paragraph longer than max_words: split at sentences
-        while len(pwords) > max_words:
-            sentences = re.split(r"(?<=[.!?])\s+", paragraph)
+        # A single paragraph longer than max_words: flush any pending text first
+        # (preserving document order), then split at sentence boundaries,
+        # hard-slicing any single sentence longer than max_words so the split
+        # always makes progress.
+        if len(pwords) > max_words:
+            if current:
+                parts.append("\n".join(current))
+                current = []
+                count = 0
+            pieces = []
+            for s in re.split(r"(?<=[.!?])\s+", paragraph):
+                sw = s.split()
+                while len(sw) > max_words:
+                    pieces.append(" ".join(sw[:max_words]))
+                    sw = sw[max_words:]
+                if sw:
+                    pieces.append(" ".join(sw))
             acc = []
             acc_count = 0
-            for s in sentences:
-                sw = len(s.split())
-                if acc_count + sw > max_words and acc_count >= MIN_CHUNK_WORDS:
+            for piece in pieces:
+                pw = len(piece.split())
+                if acc_count + pw > max_words and acc_count >= MIN_CHUNK_WORDS:
                     parts.append(" ".join(acc))
                     acc = []
                     acc_count = 0
-                acc.append(s)
-                acc_count += sw
+                acc.append(piece)
+                acc_count += pw
             paragraph = " ".join(acc)
             pwords = paragraph.split()
         current.append(paragraph)
